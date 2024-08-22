@@ -16,7 +16,7 @@
 }
 
 /* Target each child and set delay */
-.example-ideas div:nth-child(1) {
+/* .example-ideas div:nth-child(1) {
     animation-delay: 0s;
 }
 
@@ -30,7 +30,7 @@
 
 .example-ideas div:nth-child(4) {
     animation-delay: 12s;
-}
+} */
 
 @keyframes fadeinout {
     0% { opacity: 0; }
