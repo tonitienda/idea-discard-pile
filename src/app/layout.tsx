@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import NavBar from "../components/NavBar";
+<<<<<<< HEAD
 import { getSession } from "@auth0/nextjs-auth0";
 import Landing from "../components/Landing";
+=======
+>>>>>>> 2b9bb34 (feat: add login feature (only available in local for now))
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
