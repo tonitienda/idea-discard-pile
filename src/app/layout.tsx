@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
@@ -19,7 +20,10 @@ export default function RootLayout({
         />
       </head>
       <body style={{ paddingTop: 120 }}>
-        <div className="container">{children}</div>
+        <div className="container">
+          {children}
+          <Analytics />
+        </div>
       </body>
     </html>
   );
