@@ -8,4 +8,4 @@ The application is released to https://now-test-h26o-a3qtzktol-toni-tiendas-proj
 
 ### Development
 
-The application is released to https://now-test-h26o-px2nu2kpi-toni-tiendas-projects.vercel.app/
+The application is released to https://now-test-h26o-git-develop-toni-tiendas-projects.vercel.app/
