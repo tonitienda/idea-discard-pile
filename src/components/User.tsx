@@ -6,9 +6,7 @@ export default async function User() {
   const user = session ? session.user : null;
   return user ? (
     <div>
-      {
-        // make user picture as a circle or if image is not found ,show the first letter of the user name
-      }
+      Auth0 base url = {process.env.AUTH0_BASE_URL}
       <img
         src={user.picture}
         alt={user.name}
