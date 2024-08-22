@@ -1,0 +1,41 @@
+.example-ideas {
+    position: relative;
+    height: 100px; /* Adjust based on your content */
+    text-align: center;
+    font-size: 1.5rem;
+    overflow: hidden;
+}
+
+.example-ideas div {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    animation: fadeinout 8s linear;
+}
+
+/* Target each child and set delay */
+.example-ideas div:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.example-ideas div:nth-child(2) {
+    animation-delay: 4s;
+}
+
+.example-ideas div:nth-child(3) {
+    animation-delay: 8s;
+}
+
+.example-ideas div:nth-child(4) {
+    animation-delay: 12s;
+}
+
+@keyframes fadeinout {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    25% { opacity: 1; }
+    35% { opacity: 0; }
+    100% { opacity: 0; }
+}
