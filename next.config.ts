@@ -1,7 +1,13 @@
-export default {
+import { NextConfig } from "next";
+
+console.log(process.env);
+
+const nextConfig: NextConfig = {
   env: {
     AUTH0_BASE_URL: process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : process.env.AUTH0_BASE_URL,
   },
 };
+
+export default nextConfig;
