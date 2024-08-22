@@ -1,8 +1,6 @@
-import { NextConfig } from "next";
-
 console.log(process.env);
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   env: {
     AUTH0_BASE_URL: process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
