@@ -14,7 +14,6 @@ export default async function User() {
       <a href="/api/auth/logout" style={{ marginLeft: 12 }}>
         <span>Logout</span>
       </a>
-      {JSON.stringify(process.env)}
     </div>
   ) : (
     <a href="/api/auth/login">
