@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
+import NavBar from "../components/NavBar";
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
@@ -19,12 +21,15 @@ export default function RootLayout({
           href="https://bootswatch.com/5/sketchy/bootstrap.css"
         />
       </head>
-      <body style={{ paddingTop: 120 }}>
-        <div className="container">
-          {children}
-          <Analytics />
-        </div>
-      </body>
+      <UserProvider>
+        <body>
+          <NavBar />
+          <div className="container" style={{ paddingTop: 120 }}>
+            {children}
+            <Analytics />
+          </div>
+        </body>
+      </UserProvider>
     </html>
   );
 }
