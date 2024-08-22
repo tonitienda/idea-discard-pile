@@ -9,9 +9,6 @@ export default function Home() {
         </div>
       </div>
       <div className="row justify-content-center">
-        {
-          // Add an input to collect ideas. The input box should be hugre and centered.
-        }
         <div className="col-lg-8">
           <IdeaForm />
         </div>
