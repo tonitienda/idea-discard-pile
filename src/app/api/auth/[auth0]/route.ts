@@ -1,7 +1,7 @@
 // app/api/auth/[auth0]/route.js
 import { handleAuth } from "@auth0/nextjs-auth0";
 
-export const getAuth0BaseUrl = () => {
+const getAuth0BaseUrl = () => {
   if (
     process.env.VERCEL_ENV === "preview" ||
     process.env.VERCEL_ENV === "production"
