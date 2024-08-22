@@ -29,10 +29,17 @@ export default async function RootLayout({
       <UserProvider>
         <body>
           {user && <NavBar />}
-          <div className="container" style={{ paddingTop: 120 }}>
-            {user ? children : <Landing />}
-            <Analytics />
-          </div>
+
+          {user ? (
+            <div className="container" style={{ paddingTop: 120 }}>
+              {children}
+            </div>
+          ) : (
+            <div className="container" style={{ paddingTop: 120 }}>
+              <Landing />
+            </div>
+          )}
+          <Analytics />
         </body>
       </UserProvider>
     </html>
