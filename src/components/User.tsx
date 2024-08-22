@@ -3,10 +3,11 @@ import { getSession } from "@auth0/nextjs-auth0";
 export default async function User() {
   const session = await getSession();
 
+  console.log("Auth0 base url =", process.env.AUTH0_BASE_URL);
+
   const user = session ? session.user : null;
   return user ? (
     <div>
-      Auth0 base url = {process.env.AUTH0_BASE_URL}
       <img
         src={user.picture}
         alt={user.name}
