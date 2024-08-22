@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
+import NavBar from "../components/NavBar";
+import { getSession } from "@auth0/nextjs-auth0";
+import Landing from "../components/Landing";
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
   description: "Discarded ideas that could be usefule to you!",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+  const user = session ? session.user : null;
+
   return (
     <html lang="en">
       <head>
@@ -19,12 +26,15 @@ export default function RootLayout({
           href="https://bootswatch.com/5/sketchy/bootstrap.css"
         />
       </head>
-      <body style={{ paddingTop: 120 }}>
-        <div className="container">
-          {children}
-          <Analytics />
-        </div>
-      </body>
+      <UserProvider>
+        <body>
+          {user && <NavBar />}
+          <div className="container" style={{ paddingTop: 120 }}>
+            {user ? children : <Landing />}
+            <Analytics />
+          </div>
+        </body>
+      </UserProvider>
     </html>
   );
 }
