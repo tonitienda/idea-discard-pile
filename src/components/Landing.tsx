@@ -17,14 +17,19 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={"main"}>
-        <h1 className={"title"}>Welcome to A Pile of Ideas</h1>
+      <main className="main">
+        <h1 className="title">Welcome to A Pile of Ideas</h1>
 
         <PlatformIntroduction />
+        <div className="row">
+          <div className="col-lg-8">
+            <IdeaExamplesCarousel />
+          </div>
+          <div className="col-lg-4">
+            <CTASection />
+          </div>
+        </div>
 
-        <IdeaExamplesCarousel />
-
-        <CTASection />
         <BenefitsSection />
       </main>
 
