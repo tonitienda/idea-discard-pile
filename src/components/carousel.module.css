@@ -1,0 +1,50 @@
+/* styles/IdeaExamplesCarousel.module.css */
+.carouselContainer {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Adjust as needed */
+    overflow: hidden;
+  }
+  
+  .carouselItem {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .carouselItem.active {
+    opacity: 1;
+  }
+  
+  .ideaContent {
+    display: flex;
+    height: 100%;
+  }
+  
+  .imageContainer {
+    flex: 0 0 33.333%; /* Takes up 1/3 of the width */
+    padding: 10px;
+  }
+  
+  .imageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .textContainer {
+    flex: 0 0 66.666%; /* Takes up 2/3 of the width */
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .textContainer h3 {
+    margin-bottom: 10px;
+  }

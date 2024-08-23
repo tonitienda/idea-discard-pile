@@ -10,6 +10,20 @@ export const metadata: Metadata = {
   description: "Discarded ideas that could be usefule to you!",
 };
 
+const templates = [
+  "lux",
+  "materia",
+  "minty",
+  "pulse",
+  "sandstone",
+  "solar",
+  "superhero",
+  "united",
+  "yeti",
+  "quartz",
+  "sketchy",
+];
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -18,24 +32,26 @@ export default async function RootLayout({
   const session = await getSession();
   const user = session ? session.user : null;
 
+  const template = templates[Math.floor(Math.random() * templates.length)];
+
   return (
     <html lang="en">
       <head>
         <link
           rel="stylesheet"
-          href="https://bootswatch.com/5/sketchy/bootstrap.css"
+          href={`https://bootswatch.com/5/${template}/bootstrap.css`}
         />
       </head>
       <UserProvider>
         <body>
+          Template: {template}
           {user && <NavBar />}
-
           {user ? (
             <div className="container" style={{ paddingTop: 120 }}>
               {children}
             </div>
           ) : (
-            <div className="container" style={{ paddingTop: 120 }}>
+            <div className="container" style={{ paddingTop: 60 }}>
               <Landing />
             </div>
           )}
