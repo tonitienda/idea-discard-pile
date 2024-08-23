@@ -45,7 +45,9 @@ export default async function RootLayout({
       </head>
       <UserProvider>
         <body>
-          Template: {template}
+          {
+            // Template: {template}
+          }
           {user && <NavBar />}
           {user ? (
             <div className="container" style={{ paddingTop: 120 }}>
