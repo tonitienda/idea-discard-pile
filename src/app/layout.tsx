@@ -32,7 +32,8 @@ export default async function RootLayout({
   const session = await getSession();
   const user = session ? session.user : null;
 
-  const template = templates[Math.floor(Math.random() * templates.length)];
+  //const template = templates[Math.floor(Math.random() * templates.length)];
+  const template = "sketchy";
 
   return (
     <html lang="en">
@@ -44,7 +45,9 @@ export default async function RootLayout({
       </head>
       <UserProvider>
         <body>
-          Template: {template}
+          {
+            // Template: {template}
+          }
           {user && <NavBar />}
           {user ? (
             <div className="container" style={{ paddingTop: 120 }}>
