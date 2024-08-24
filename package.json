@@ -22,11 +22,16 @@
     "react": "^18",
     "react-awesome-slider": "^4.1.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-dom": "^18",
     "uuid": "^10.0.0"
 =======
     "react-dom": "^18"
 >>>>>>> 29b4173 (feat: implementing landing page structure)
+=======
+    "react-dom": "^18",
+    "uuid": "^10.0.0"
+>>>>>>> 43aedb7 (feat: stores ideas in memory and tracks its owner)
   },
   "devDependencies": {
     "@types/node": "^20",
