@@ -3,45 +3,21 @@ import { v4 as uuid } from "uuid";
 import { Idea } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken } from "@auth0/nextjs-auth0";
+import jwt from "jsonwebtoken";
+import jose from "node-jose";
+import { getSession } from "@auth0/nextjs-auth0";
 
 // TODO - Add logs
 // TODO - Move this to a shared file
 const getUser = async (req: NextRequest) => {
   const res = new NextResponse();
 
-  const token = await getAccessToken(req, res);
-  if (!token || !token.accessToken) {
-    return null;
-  }
-  console.log("token", token);
-  const cookies = req.headers.get("cookie") || "";
+  const session = await getSession(req, res);
 
-  if (!cookies) {
-    return null;
-  }
+  console.log("session", session);
+  console.log("session.user", session.user);
 
-  console.log("cookies", cookies);
-
-  const userInfoResponse = await fetch(
-    `${process.env.AUTH0_BASE_URL}/api/auth/me`,
-    {
-      headers: {
-        Cookie: cookies, // Forward the cookies to the API
-      },
-    }
-  );
-  console.log("userInfoResponse", userInfoResponse);
-  if (userInfoResponse.status === 204) {
-    return null;
-  }
-  if (!userInfoResponse.ok) {
-    return null;
-  }
-
-  const userInfo = await userInfoResponse.json();
-  console.log("userInfo", userInfo);
-
-  return userInfo;
+  return session.user;
 };
 
 const EmptyIdea: Idea = {
