@@ -5,7 +5,30 @@ const { useState } = require("react");
 export default function IdeaForm() {
   const [idea, setIdea] = useState("");
   const [reason, setReason] = useState("");
+  const [ideaId, setIdeaId] = useState("");
   const [askForReason, setAskForReason] = useState(false);
+
+  const handleTitleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Call the API to save the idea
+    const result = await fetch("/api/ideas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: idea }),
+    });
+
+    if (result.ok) {
+      setIdea("");
+      setAskForReason(true);
+
+      // Get the idea id from the response
+      const { id } = await result.json();
+      setIdeaId(id);
+    }
+  };
 
   return (
     <div className="input-group mb-3">
@@ -39,8 +62,7 @@ export default function IdeaForm() {
           onChange={(e) => setIdea(e.target.value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              setIdea("");
-              setAskForReason(true);
+              handleTitleSubmit(e);
             }
           }}
         />
