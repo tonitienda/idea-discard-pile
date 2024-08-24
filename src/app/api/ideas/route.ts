@@ -22,11 +22,14 @@ const getUser = async (req: NextRequest) => {
 
   console.log("cookies", cookies);
 
-  const userInfoResponse = await fetch(`http://localhost:3000/api/auth/me`, {
-    headers: {
-      Cookie: cookies, // Forward the cookies to the API
-    },
-  });
+  const userInfoResponse = await fetch(
+    `${process.env.AUTH0_BASE_URL}/api/auth/me`,
+    {
+      headers: {
+        Cookie: cookies, // Forward the cookies to the API
+      },
+    }
+  );
   console.log("userInfoResponse", userInfoResponse);
   if (userInfoResponse.status === 204) {
     return null;
