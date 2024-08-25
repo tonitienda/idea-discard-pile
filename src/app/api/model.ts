@@ -1,3 +1,10 @@
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  picture: string;
+};
+
 export type Idea = {
   id: string;
   title: string;
@@ -7,5 +14,5 @@ export type Idea = {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
-  owner: string;
+  owner: User;
 };
