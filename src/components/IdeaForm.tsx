@@ -1,87 +1,43 @@
-"use client";
+// components/IdeaForm.tsx
+import { useState } from "react";
+import { Idea } from "../app/api/model";
 
-const { useState } = require("react");
+interface IdeaFormProps {
+  onSubmit: (idea: Partial<Idea>) => void;
+}
 
-export default function IdeaForm() {
-  const [idea, setIdea] = useState("");
-  const [reason, setReason] = useState("");
-  const [ideaId, setIdeaId] = useState("");
-  const [askForReason, setAskForReason] = useState(false);
+export default function IdeaForm({ onSubmit }: IdeaFormProps) {
+  const [description, setDescription] = useState("");
+  const [onFocus, setOnFocus] = useState(false);
 
-  const handleTitleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Call the API to save the idea
-    const result = await fetch("/api/ideas", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title: idea }),
-    });
-
-    if (result.ok) {
-      setIdea("");
-      setAskForReason(true);
-
-      // Get the idea id from the response
-      const { id } = await result.json();
-      setIdeaId(id);
+    if (description.trim()) {
+      onSubmit({
+        description,
+      });
+      setDescription("");
     }
   };
 
   return (
-    <div className="input-group mb-3">
-      {askForReason ? (
-        <input
-          type="text"
-          value={reason}
-          className="form-control"
-          style={{ fontSize: "2em" }}
-          aria-label="Your reason"
-          placeholder="Why did you discard it?"
-          onChange={(e) => setReason(e.target.value)}
-          onKeyUp={(e) => {
-            if (e.key === "Enter") {
-              setReason("");
-              setAskForReason(false);
-            } else if (e.key === "Escape") {
-              setReason("");
-              setAskForReason(false);
-            }
-          }}
-        />
-      ) : (
-        <input
-          type="text"
-          value={idea}
-          className="form-control"
-          style={{ fontSize: "2em" }}
-          aria-label="Your idea"
-          placeholder="Enter your idea here"
-          onChange={(e) => setIdea(e.target.value)}
-          onKeyUp={(e) => {
-            if (e.key === "Enter") {
-              handleTitleSubmit(e);
-            }
-          }}
-        />
-      )}
-      <span className="input-group-text">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-arrow-right"
-          viewBox="0 0 16 16" // viewBox is a required attribute for SVGs.
-        >
-          <path
-            fillRule="evenodd"
-            d="M11.354 8.354a.5.5 0 0 0 0-.708l-7-7a.5.5 0 0 0-.708.708L10.293 8l-6.647 6.646a.5.5 0 0 0 .708.708l7-7a.5.5 0 0 0 0-.708z"
-          />
-        </svg>
-      </span>
-    </div>
+    <form onSubmit={handleSubmit} className="d-flex w-100">
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Inspire others with your idea..."
+        rows={onFocus ? 4 : 1}
+        onFocus={() => setOnFocus(true)}
+        onBlur={() => setOnFocus(false)}
+        className="form-control me-2"
+      />
+      <button
+        type="submit"
+        className="btn btn-primary"
+        disabled={!description.trim()}
+      >
+        Share Idea
+      </button>
+    </form>
   );
 }
