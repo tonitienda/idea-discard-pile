@@ -2,9 +2,6 @@ import { IdeasIndexById } from "../inmemorydb";
 import { v4 as uuid } from "uuid";
 import { Idea } from "../model";
 import { NextRequest, NextResponse } from "next/server";
-import { getAccessToken } from "@auth0/nextjs-auth0";
-import jwt from "jsonwebtoken";
-import jose from "node-jose";
 import { getSession } from "@auth0/nextjs-auth0";
 
 // TODO - Add logs
