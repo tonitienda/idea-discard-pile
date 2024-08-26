@@ -1,4 +1,3 @@
-import { IdeasIndexById } from "../inmemorydb";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
 import { redirectToLogin } from "../redirects";

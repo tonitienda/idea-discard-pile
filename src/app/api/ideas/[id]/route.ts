@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getIdeaById } from "../../../../backend/db";
+import { getIdeaById, updateIdea } from "../../../../backend/db";
 
 export async function GET(req: NextRequest, { params }) {
   const { id } = params;
@@ -16,16 +16,15 @@ export async function PUT(req: NextRequest, { params }) {
   const { body } = req;
   const { id } = params;
 
-  const idea = IdeasIndexById[id];
+  const idea = await getIdeaById(id);
   if (!idea) {
     return NextResponse.json({ message: "Idea not found" }, { status: 404 });
   }
 
-  IdeasIndexById[id] = {
+  await updateIdea({
     ...idea,
     ...body,
-    updatedAt: new Date().toISOString(),
-  };
+  });
 
   return NextResponse.json({ id }, { status: 201 });
 }
@@ -33,15 +32,15 @@ export async function PUT(req: NextRequest, { params }) {
 export async function DELETE(req: NextRequest, { params }) {
   const { id } = params;
 
-  const idea = IdeasIndexById[id];
+  const idea = await getIdeaById(id);
   if (!idea) {
     return NextResponse.json({ message: "Idea not found" }, { status: 404 });
   }
 
-  IdeasIndexById[id] = {
+  await updateIdea({
     ...idea,
     deletedAt: new Date().toISOString(),
-  };
+  });
 
   return NextResponse.json({ id }, { status: 201 });
 }
