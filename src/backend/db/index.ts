@@ -9,7 +9,11 @@ const rowToIdea = (row: any): Idea => {
     id: row.id,
     title: row.title,
     description: row.description,
-    owner: row.owner,
+    owner: {
+      id: row.owner_id,
+      handle: row.handle,
+      picture: row.picture,
+    },
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     tags: row.tags,
@@ -52,7 +56,10 @@ export async function query(query: string, values: any[] = []) {
 
 export async function getIdeas(): Promise<Idea[]> {
   const result = await query(
-    `SELECT * FROM ${schema}.ideas WHERE deleted_at IS NULL`
+    `SELECT i.*, u.handle, u.picture
+    FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
+    ON i.owner_id = u.id 
+    WHERE i.deleted_at IS NULL`
   );
 
   return result.rows.map(rowToIdea);
@@ -71,16 +78,25 @@ export async function getIdeaById(id: string): Promise<Idea> {
 }
 
 export async function createIdea(idea: Idea): Promise<Idea> {
+  console.log("Creating idea", idea);
   return query(
-    `INSERT INTO ${schema}.ideas (title, description, owner, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [idea.title, idea.description, idea.owner, idea.createdAt, idea.updatedAt]
+    `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [
+      idea.id,
+      idea.title,
+      idea.description,
+      idea.tags,
+      idea.owner.id,
+      new Date().toISOString(),
+      new Date().toISOString(),
+    ]
   );
 }
 
 export async function updateIdea(idea: Idea): Promise<Idea> {
   return query(
-    `UPDATE ${schema}.ideas SET title = $1, description = $2, owner = $3, updated_at = $4 WHERE id = $5 RETURNING *`,
-    [idea.title, idea.description, idea.owner, idea.updatedAt, idea.id]
+    `UPDATE ${schema}.ideas SET title = $1, description = $2, updated_at = $4 WHERE id = $5 RETURNING *`,
+    [idea.title, idea.description, new Date().toISOString(), idea.id]
   );
 }
 

@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
     ...EmptyIdea,
     ...data,
     id,
-    owner: user.id,
+    owner: user,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
