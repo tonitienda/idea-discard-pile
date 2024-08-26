@@ -6,9 +6,8 @@ import {
   handleCallback,
 } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
-import { getUserBySub, addUserToDatabase } from "../../inmemorydb"; // Adjust the import path as needed
+import { getUserBySub, createUser } from "../../../../backend/db";
 import { v4 as uuid } from "uuid";
-import { redirectTo } from "../../redirects";
 
 export const GET = handleAuth({
   callback: async (req: NextRequest, ctx: AppRouteHandlerFnContext) => {
@@ -28,13 +27,13 @@ export const GET = handleAuth({
 
         if (!existingUser) {
           // If the user doesn't exist, add them to your database
-          await addUserToDatabase({
+          await createUser({
             id: uuid(),
             sub: user.sub,
             email: user.email,
             name: user.name,
             picture: user.picture,
-            handle: "temp", // See what do do with this
+            handle: user.nickname,
           });
 
           // Redirect to profile page for new users
