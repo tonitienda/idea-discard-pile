@@ -4,6 +4,29 @@ import { Idea, User } from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
 
+const rowToIdea = (row: any): Idea => {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    owner: row.owner,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    tags: row.tags,
+  };
+};
+
+const rowToUser = (row: any): User => {
+  return {
+    id: row.id,
+    sub: row.auth0_sub,
+    name: row.name,
+    email: row.email,
+    handle: row.handle,
+    picture: row.picture,
+  };
+};
+
 // Create a pool of connections
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
@@ -32,22 +55,19 @@ export async function getIdeas(): Promise<Idea[]> {
     `SELECT * FROM ${schema}.ideas WHERE deleted_at IS NULL`
   );
 
-  const ideas: Idea[] = result.rows.map((row: any) => {
-    return {
-      id: row.id,
-      title: row.title,
-      description: row.description,
-      owner: row.owner,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    };
-  });
-
-  return ideas;
+  return result.rows.map(rowToIdea);
 }
 
 export async function getIdeaById(id: string): Promise<Idea> {
-  return query(`SELECT * FROM ${schema}.ideas WHERE id = $1`, [id]);
+  const result = await query(`SELECT * FROM ${schema}.ideas WHERE id = $1`, [
+    id,
+  ]);
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  return rowToIdea(result.rows[0]);
 }
 
 export async function createIdea(idea: Idea): Promise<Idea> {
@@ -75,14 +95,7 @@ export async function getUserBySub(sub: string): Promise<User> {
     return null;
   }
 
-  return {
-    id: result.rows[0].id,
-    sub: result.rows[0].auth0_sub,
-    name: result.rows[0].name,
-    email: result.rows[0].email,
-    handle: result.rows[0].handle,
-    picture: result.rows[0].picture,
-  };
+  return rowToUser(result.rows[0]);
 }
 
 export async function createUser(user: User): Promise<User> {

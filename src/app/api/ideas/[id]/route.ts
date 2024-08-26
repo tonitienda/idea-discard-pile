@@ -1,10 +1,10 @@
-import { IdeasIndexById } from "../../inmemorydb";
 import { NextRequest, NextResponse } from "next/server";
+import { getIdeaById } from "../../../../backend/db";
 
 export async function GET(req: NextRequest, { params }) {
   const { id } = params;
 
-  const idea = IdeasIndexById[id];
+  const idea = await getIdeaById(id);
   if (!idea) {
     return NextResponse.json({ message: "Idea not found" }, { status: 404 });
   }
