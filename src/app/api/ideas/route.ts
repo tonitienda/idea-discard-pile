@@ -3,19 +3,8 @@ import { v4 as uuid } from "uuid";
 import { Idea } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@auth0/nextjs-auth0";
-
-// TODO - Add logs
-// TODO - Move this to a shared file
-const getUser = async (req: NextRequest) => {
-  const res = new NextResponse();
-
-  const session = await getSession(req, res);
-
-  console.log("session", session);
-  console.log("session.user", session.user);
-
-  return session.user;
-};
+import { getUser } from "../users";
+import { redirectToLogin } from "../redirects";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -165,10 +154,12 @@ const exampleIdeas = [
 
 export async function GET(req: NextRequest) {
   console.log("GET", req.url);
+  // FIXME - See why this is not working
   const user = await getUser(req);
-  if (!user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
+  console.log("User", user);
+  // if (!user) {
+  //   return redirectToLogin(req);
+  // }
 
   console.log("GET", IdeasIndexById);
   const items: Idea[] = Object.values(IdeasIndexById).filter(
@@ -185,8 +176,7 @@ export async function GET(req: NextRequest) {
         id,
         owner: {
           id: "1",
-          name: "Pile Of Ideas",
-          email: "tonitienda@gmail.com",
+          handle: "@ideagenie",
           picture: "/images/hero.webp",
         },
       });

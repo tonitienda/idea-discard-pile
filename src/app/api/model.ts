@@ -1,8 +1,13 @@
-export type User = {
+export type PublicUser = {
   id: string;
-  name: string;
-  email: string;
+  handle: string;
   picture: string;
+};
+
+export type User = PublicUser & {
+  sub: string;
+  email: string;
+  name: string;
 };
 
 export type Idea = {
@@ -14,5 +19,5 @@ export type Idea = {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
-  owner: User;
+  owner: PublicUser;
 };
