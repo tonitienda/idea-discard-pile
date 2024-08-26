@@ -11,7 +11,6 @@ import { Idea, User } from "../app/api/model";
 
 export default function Home() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     fetch("/api/ideas")
@@ -19,18 +18,22 @@ export default function Home() {
       .then((data) => setIdeas(data.items));
   }, []);
 
-  const addIdea = (newIdea: Partial<Idea>) => {
-    if (currentUser) {
-      const ideaWithDetails: Idea = {
-        ...newIdea,
-        id: Date.now().toString(),
-        tags: newIdea.tags || [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        owner: currentUser,
-      } as Idea;
-      setIdeas([ideaWithDetails, ...ideas]);
-    }
+  const addIdea = async (newIdea: Partial<Idea>): Promise<void> => {
+    const ideaWithDetails: Idea = {
+      ...newIdea,
+      tags: newIdea.tags || [],
+    } as Idea;
+    return fetch("/api/ideas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(ideaWithDetails),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIdeas((ideas) => [...ideas, { ...ideaWithDetails, id: data.id }]);
+      });
   };
 
   return (

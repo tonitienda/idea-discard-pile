@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Idea } from "../app/api/model";
 
 interface IdeaFormProps {
-  onSubmit: (idea: Partial<Idea>) => void;
+  onSubmit: (idea: Partial<Idea>) => Promise<void>;
 }
 
 export default function IdeaForm({ onSubmit }: IdeaFormProps) {
@@ -13,10 +13,11 @@ export default function IdeaForm({ onSubmit }: IdeaFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (description.trim()) {
-      onSubmit({
+      await onSubmit({
         description,
       });
       setDescription("");
+      setOnFocus(false);
     }
   };
 
@@ -28,7 +29,7 @@ export default function IdeaForm({ onSubmit }: IdeaFormProps) {
         placeholder="Inspire others with your idea..."
         rows={onFocus ? 4 : 1}
         onFocus={() => setOnFocus(true)}
-        onBlur={() => setOnFocus(false)}
+        //onBlur={() => setOnFocus(false)}
         className="form-control me-2"
       />
       <button

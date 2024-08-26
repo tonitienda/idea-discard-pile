@@ -1,10 +1,8 @@
-import { IdeasIndexById } from "../inmemorydb";
 import { v4 as uuid } from "uuid";
 import { Idea } from "../model";
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@auth0/nextjs-auth0";
 import { getUser } from "../users";
-import { redirectToLogin } from "../redirects";
+import { getIdeas, createIdea } from "../../../backend/db";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -153,39 +151,45 @@ const exampleIdeas = [
 ];
 
 export async function GET(req: NextRequest) {
-  console.log("GET", req.url);
-  // FIXME - See why this is not working
-  const user = await getUser(req);
-  console.log("User", user);
-  // if (!user) {
-  //   return redirectToLogin(req);
-  // }
+  try {
+    console.log("GET", req.url);
+    // FIXME - See why this is not working
+    const user = await getUser(req);
+    // if (!user) {
+    //   return redirectToLogin(req);
+    // }
 
-  console.log("GET", IdeasIndexById);
-  const items: Idea[] = Object.values(IdeasIndexById).filter(
-    (i) => !i.deletedAt
-  );
+    const items: Idea[] = await getIdeas();
 
-  if (items.length < 20) {
-    for (let exIdea of exampleIdeas) {
-      const id = uuid();
+    console.log("Ideas", items);
 
-      items.push({
-        ...EmptyIdea,
-        ...exIdea,
-        id,
-        owner: {
-          id: "1",
-          handle: "@ideagenie",
-          picture: "/images/hero.webp",
-        },
-      });
+    if (items.length < 20) {
+      for (let exIdea of exampleIdeas) {
+        const id = uuid();
+
+        items.push({
+          ...EmptyIdea,
+          ...exIdea,
+          id,
+          owner: {
+            id: "1",
+            handle: "@ideagenie",
+            picture: "/images/hero.webp",
+          },
+        });
+      }
     }
+
+    console.log("Total ideas", items.length);
+
+    return NextResponse.json({ items }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "An error occurred while fetching ideas" },
+      { status: 500 }
+    );
   }
-
-  console.log("Total ideas", items.length);
-
-  return NextResponse.json({ items }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -197,17 +201,14 @@ export async function POST(req: NextRequest) {
 
   const id = uuid();
 
-  // FIXME: Add validation
-  IdeasIndexById[id] = {
+  await createIdea({
     ...EmptyIdea,
     ...data,
     id,
-    owner: user.sub, // TODO - Use the internal id
+    owner: user,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
-
-  console.log("POST", IdeasIndexById[id]);
+  });
 
   return NextResponse.json({ id }, { status: 201 });
 }
