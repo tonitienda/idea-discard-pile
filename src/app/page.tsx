@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import IdeaForm from "../components/IdeaForm";
+
 import IdeaFeed from "../components/IdeaFeed";
 import { Idea, User } from "../app/api/model";
 

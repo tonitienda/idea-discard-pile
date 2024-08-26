@@ -49,11 +49,11 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
           <div className={styles.header}>
             <img
               src={idea.owner.picture}
-              alt={idea.owner.name}
+              alt={idea.owner.handle}
               className={styles.avatar}
             />
             <div className={styles.userInfo}>
-              <h3 className={styles.ownerName}>{idea.owner.name}</h3>
+              <h3 className={styles.ownerName}>{idea.owner.handle}</h3>
               <p className={styles.meta}>
                 {new Date(idea.createdAt).toLocaleString()}
               </p>
