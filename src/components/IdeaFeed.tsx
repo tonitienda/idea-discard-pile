@@ -53,7 +53,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               className={styles.avatar}
             />
             <div className={styles.userInfo}>
-              <h3 className={styles.ownerName}>{idea.owner.handle}</h3>
+              <h3 className={styles.ownerHandle}>{idea.owner.handle}</h3>
               <p className={styles.meta}>
                 {new Date(idea.createdAt).toLocaleString()}
               </p>

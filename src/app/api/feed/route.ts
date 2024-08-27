@@ -163,26 +163,39 @@ export async function GET(req: NextRequest) {
 
     console.log("Ideas", items);
 
-    if (items.length < 20) {
-      for (let exIdea of exampleIdeas) {
-        const id = uuid();
+    const ideas = [];
 
-        items.push({
-          ...EmptyIdea,
-          ...exIdea,
-          id,
-          owner: {
-            id: "1",
-            handle: "@ideagenie",
-            picture: "/images/hero.webp",
-          },
-        });
+    if (items.length < 20) {
+      // Alternate the example ideas with the fetched ideas
+      const missingIdeas = 20 - items.length;
+      const interval = Math.floor(exampleIdeas.length / missingIdeas);
+
+      for (let i = 0; i < 20; i++) {
+        if (i % interval === 0) {
+          ideas.push({
+            ...EmptyIdea,
+            ...exampleIdeas[i / interval],
+            id: uuid(),
+            createdAt: new Date().toISOString(),
+            owner: {
+              id: "1",
+              handle: "@ideabot",
+              picture: "/images/ideabot_avatar.webp",
+            },
+          });
+        }
+        if (i < items.length) {
+          ideas.push(items[i]);
+        }
       }
+    } else {
+      ideas.push(...items);
     }
 
-    console.log("Total ideas", items.length);
+    console.log("Total ideas", ideas.length);
+    console.log("Ideas", ideas);
 
-    return NextResponse.json({ items }, { status: 200 });
+    return NextResponse.json({ items: ideas }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

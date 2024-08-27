@@ -11,7 +11,7 @@ const rowToIdea = (row: any): Idea => {
     description: row.description,
     owner: {
       id: row.owner_id,
-      handle: row.handle,
+      handle: `@${row.handle}`,
       picture: row.picture,
     },
     createdAt: row.created_at,

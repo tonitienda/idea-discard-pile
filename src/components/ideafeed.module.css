@@ -45,6 +45,14 @@
     font-weight: bold;
     color: #333;
   }
+
+  .ownerHandle {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+    text-transform: lowercase;
+  }
   
   .meta {
     margin-top: 2px;
