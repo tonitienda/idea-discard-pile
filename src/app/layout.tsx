@@ -3,8 +3,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import NavBar from "../components/NavBar";
 import { getSession } from "@auth0/nextjs-auth0";
-import Landing from "../components/Landing";
-import { Auth0Provider } from "@auth0/auth0-react";
+import Landing from "../components/Landing/index";
+import LandingNavBar from "../components/Landing/NavBar";
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
@@ -34,7 +34,7 @@ export default async function RootLayout({
   const user = session ? session.user : null;
 
   //const template = templates[Math.floor(Math.random() * templates.length)];
-  const template = "sketchy";
+  const template = "lux";
 
   return (
     <html lang="en">
@@ -46,7 +46,7 @@ export default async function RootLayout({
       </head>
       <UserProvider>
         <body>
-          {user && <NavBar />}
+          {user ? <NavBar /> : <LandingNavBar />}
           {user ? (
             <div className="container" style={{ paddingTop: 24 }}>
               {children}
