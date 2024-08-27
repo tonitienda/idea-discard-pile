@@ -13,7 +13,7 @@ export default function Home() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
 
   useEffect(() => {
-    fetch("/api/ideas")
+    fetch("/api/feed")
       .then((response) => (response.ok ? response.json() : { items: [] }))
       .then((data) => setIdeas(data.items));
   }, []);

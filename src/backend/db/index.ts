@@ -65,6 +65,19 @@ export async function getIdeas(): Promise<Idea[]> {
   return result.rows.map(rowToIdea);
 }
 
+export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
+  const result = await query(
+    `SELECT i.*, u.handle, u.picture
+      FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
+      ON i.owner_id = u.id 
+      WHERE i.deleted_at IS NULL
+      AND i.owner_id = $1`,
+    [userId]
+  );
+
+  return result.rows.map(rowToIdea);
+}
+
 export async function getIdeaById(id: string): Promise<Idea> {
   const result = await query(
     `SELECT i.*, u.handle, u.picture 
