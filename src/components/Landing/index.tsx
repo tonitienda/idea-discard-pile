@@ -16,17 +16,19 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className="main">
-        <h1 className="title">Welcome to A Pile of Ideas</h1>
-
-        <PlatformIntroduction />
+        <h1 className="title">A Pile of Ideas</h1>
+        <div className="row">
+          <div className="col-lg-7">
+            <PlatformIntroduction />
+          </div>
+          <div className="col-lg-5">
+            <CTASection />
+          </div>
+        </div>
         <div className="row">
           <div className="col-lg-8">
             <IdeaExamplesCarousel />
-          </div>
-          <div className="col-lg-4">
-            <CTASection />
           </div>
         </div>
 

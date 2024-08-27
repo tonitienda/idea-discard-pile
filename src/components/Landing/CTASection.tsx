@@ -22,8 +22,14 @@ export default function CTASection() {
       <div style={{ marginTop: "auto", marginBottom: "auto" }}>
         <a href="/api/auth/login">
           <button
-            className="btn btn-success btn-lg"
-            style={{ width: 300, height: 100, fontSize: "2rem" }}
+            className="btn btn-primary btn-lg"
+            style={{
+              width: 300,
+              height: 150,
+              fontSize: "1.8rem",
+              wordSpacing: 10,
+              lineHeight: "2.5rem",
+            }}
           >
             {captions[currentCaption]}
           </button>
