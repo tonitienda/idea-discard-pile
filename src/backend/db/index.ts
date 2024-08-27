@@ -66,9 +66,13 @@ export async function getIdeas(): Promise<Idea[]> {
 }
 
 export async function getIdeaById(id: string): Promise<Idea> {
-  const result = await query(`SELECT * FROM ${schema}.ideas WHERE id = $1`, [
-    id,
-  ]);
+  const result = await query(
+    `SELECT i.*, u.handle, u.picture 
+    FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u
+    ON i.owner_id = u.id
+    WHERE i.id = $1`,
+    [id]
+  );
 
   if (result.rows.length === 0) {
     return null;
