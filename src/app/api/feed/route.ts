@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
     if (items.length < 20) {
       // Alternate the example ideas with the fetched ideas
       const missingIdeas = 20 - items.length;
-      const interval = Math.floor(exampleIdeas.length / missingIdeas);
+      const interval = Math.ceil(exampleIdeas.length / missingIdeas);
 
       for (let i = 0; i < 20; i++) {
         if (i % interval === 0) {
