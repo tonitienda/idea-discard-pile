@@ -1,6 +1,6 @@
 // DB Client
 import { Client, Pool } from "pg";
-import { Idea, User } from "../../app/api/model";
+import { Idea, User, AdminDashboard } from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
 
@@ -137,4 +137,14 @@ export async function createUser(user: User): Promise<User> {
     `INSERT INTO ${schema}.users (id, auth0_sub, name, email, handle, picture) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
     [user.id, user.sub, user.name, user.email, user.handle, user.picture]
   );
+}
+
+export async function getAdminDashboardInfo(): Promise<AdminDashboard> {
+  const ideasCount = await query(`SELECT COUNT(*) FROM ${schema}.ideas`);
+  const usersCount = await query(`SELECT COUNT(*) FROM ${schema}.users`);
+
+  return {
+    ideasCount: ideasCount.rows[0].count,
+    usersCount: usersCount.rows[0].count,
+  };
 }

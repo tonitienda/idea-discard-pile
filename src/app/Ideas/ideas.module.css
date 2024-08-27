@@ -1,0 +1,205 @@
+/* styles/IdeaFeed.module.css */
+
+.feed {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 0;
+  }
+  
+  .idea {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.4s ease;
+  }
+  
+  .idea:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .avatar {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .userInfo {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ownerName {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .ownerHandle {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+    text-transform: lowercase;
+  }
+  
+  .meta {
+    margin-top: 2px;
+    font-size: 0.8em;
+    color: #888;
+  }
+  
+  .content {
+    margin-bottom: 10px;
+  }
+  
+  .title {
+    margin: 0 0 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  .description {
+    margin: 0;
+    font-size: 1em;
+    color: #555;
+  }
+  
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  
+  .tag {
+    border-color: #e1e8ed;
+    border-style: solid;
+    border-radius: 16px;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    font-weight: 500;
+    color: #555;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .tag:hover {
+    background-color: #d0d6da;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+  
+  .actionButton {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .actionButton:hover {
+    transform: scale(1.1);
+  }
+  
+  .liked {
+    color: #0a0;
+    animation: liked 0.4s ease-in-out;
+  }
+  
+  .disliked {
+    color: #f00;
+    animation: disliked 0.4s ease-in-out;
+  }
+  
+  .inspired {
+    color: #aa0;
+    animation: inspired 0.4s ease-in-out;
+  }
+
+
+  .worked {
+    color: #333;
+    animation: inspired 0.4s ease-in-out;
+  }
+  
+  @keyframes liked {
+    0% {
+      transform: scale(1);
+      color: #fff;
+
+    }
+    50% {
+      transform: scale(1.4);
+    }
+    100% {
+      transform: scale(1);
+      color: #0a0;
+
+    }
+  }
+  
+  @keyframes disliked {
+    0% {
+      transform: scale(1);
+      color: #fff;
+
+    }
+    50% {
+      transform: scale(1.4);
+    }
+    100% {
+      transform: scale(1);
+      color: #f00;
+
+    }
+  }
+  
+  @keyframes inspired {
+    0% {
+      transform: scale(1);
+        color: #fff;
+    }
+    50% {
+      transform: scale(1.4);
+    }
+    100% {
+      transform: scale(1);
+      color: #aa0;
+    }
+  }
+
+  @keyframes worked {
+    0% {
+      transform: scale(1);
+      color: #fff;
+
+    }
+    50% {
+      transform: scale(2);
+    }
+    100% {
+      transform: scale(1);
+      color: #00f;
+    }
+  }
+  

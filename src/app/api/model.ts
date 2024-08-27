@@ -25,3 +25,8 @@ export type Idea = {
   deletedAt?: string;
   owner: PublicUser;
 };
+
+export type AdminDashboard = {
+  ideasCount: number;
+  usersCount: number;
+};

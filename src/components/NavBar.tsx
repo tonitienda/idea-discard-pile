@@ -7,6 +7,7 @@ export default function NavBar() {
         <a className="navbar-brand" href="/">
           A Pile of Ideas
         </a>
+        <a href="/ideas">My ideas</a>
         <User />
       </div>
     </nav>

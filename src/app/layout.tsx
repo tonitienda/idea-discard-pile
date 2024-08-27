@@ -48,7 +48,10 @@ export default async function RootLayout({
         <body>
           {user ? <NavBar /> : <LandingNavBar />}
           {user ? (
-            <div className="container" style={{ paddingTop: 24 }}>
+            <div
+              className="container"
+              style={{ paddingTop: 24, paddingBottom: 48 }}
+            >
               {children}
             </div>
           ) : (
