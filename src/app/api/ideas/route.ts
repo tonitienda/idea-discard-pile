@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ideaCompletion = await completeIdea(description);
+  const ideaCompletion = await completeIdea(description, user.id);
 
   console.log("Idea completion", ideaCompletion);
 
@@ -231,9 +231,8 @@ export async function POST(req: NextRequest) {
     title: ideaCompletion.title || "Untitled",
     description,
     tags:
-      ideaCompletion.suggestedTags?.map((t) =>
-        t.toLowerCase().replaceAll(" ", "")
-      ) || [],
+      ideaCompletion.tags?.map((t) => t.toLowerCase().replaceAll(" ", "")) ||
+      [],
     owner: user,
   });
 
