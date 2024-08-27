@@ -224,6 +224,8 @@ export async function POST(req: NextRequest) {
   // Premium users can get more ideas per day (10?), longer ideas, and the description corrected
   // Maybe the difference between premium and premium+ is around the number of ideas or the length of their descriptions.
   // But think about how many ideas a user will have.
+  // Also maybe premum have titles of 3-10 words and normal users 3-5 and cannot edit the title.
+  // Maybe premium have more tags. Sell is as "better quallity ideas" and "more visibility"
   await createIdea({
     id,
     title: ideaCompletion.title || "Untitled",
