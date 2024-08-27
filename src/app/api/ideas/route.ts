@@ -3,6 +3,7 @@ import { Idea } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
 import { getIdeas, createIdea } from "../../../backend/db";
+import { completeIdea } from "../../../backend/ai/idea-analysis";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -199,15 +200,32 @@ export async function POST(req: NextRequest) {
   }
   const data = await req.json();
 
+  const { description } = data;
+
+  console.log("Description:", description);
+
+  if (!description || description.length < 10) {
+    return NextResponse.json(
+      { message: "Description must be at least 10 characters" },
+      { status: 400 }
+    );
+  }
+
+  const ideaCompletion = await completeIdea(description);
+
+  console.log("Idea completion", ideaCompletion);
+
   const id = uuid();
 
   await createIdea({
-    ...EmptyIdea,
-    ...data,
     id,
+    title: ideaCompletion.title || "Untitled",
+    description,
+    tags:
+      ideaCompletion.suggestedTags?.map((t) =>
+        t.toLowerCase().replaceAll(" ", "")
+      ) || [],
     owner: user,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   });
 
   return NextResponse.json({ id }, { status: 201 });

@@ -31,8 +31,12 @@ export default function Home() {
       body: JSON.stringify(ideaWithDetails),
     })
       .then((response) => response.json())
-      .then((data) => {
-        setIdeas((ideas) => [...ideas, { ...ideaWithDetails, id: data.id }]);
+      .then((data) => fetch(`/api/ideas/${data.id}`))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((idea) => {
+        if (idea) {
+          setIdeas((ideas) => [idea, ...ideas]);
+        }
       });
   };
 
