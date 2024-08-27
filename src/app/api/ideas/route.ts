@@ -216,7 +216,14 @@ export async function POST(req: NextRequest) {
   console.log("Idea completion", ideaCompletion);
 
   const id = uuid();
-
+  // TODO - Add fields in DB to store the spam and offensive scores.
+  // Do not load the ideas with scores > 50% but let the user
+  // Find their ideas in their dashboard so they can try to "unflag" them.
+  // Ban users with more than 3 flagged ideas. They are not allowed to post ideas anymore.
+  // Limit users to a max of 1 idea per day and a max of x characters per idea. (each token costs money)
+  // Premium users can get more ideas per day (10?), longer ideas, and the description corrected
+  // Maybe the difference between premium and premium+ is around the number of ideas or the length of their descriptions.
+  // But think about how many ideas a user will have.
   await createIdea({
     id,
     title: ideaCompletion.title || "Untitled",
