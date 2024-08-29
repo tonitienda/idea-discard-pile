@@ -3,4 +3,4 @@
 
 migration-up:
     source .env.local set
-    npx db-migrate up --config database.js -e dev
+    npx db-migrate up --config database.local.js -e dev

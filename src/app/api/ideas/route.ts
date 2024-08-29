@@ -3,7 +3,7 @@ import { Idea, IdeaModeration } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
 import { getIdeasByUserId, createIdea } from "../../../backend/db";
-import { completeIdea } from "../../../backend/ai/idea-analysis";
+import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -59,7 +59,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ideaCompletion = await completeIdea(description, user.id);
+  let ideaCompletion = await analyzeIdea(description, user.id);
+
+  if (!ideaCompletion) {
+    ideaCompletion = {
+      ideaProbability: 0,
+      spamProbability: 0,
+      spamExplanation: "",
+      offensiveProbability: 0,
+      relevanceProbability: 0,
+      sentiment: "neutral",
+      uniquenessProbability: 0,
+      clarityProbability: 0,
+      culturalSensitivity: 0,
+      engagementPotential: 0,
+      tags: [],
+      title: "Untitled",
+    };
+  }
 
   console.log("Idea completion", ideaCompletion);
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx db-migrate up -e $ENV --config database.js && next build",
+    "build": "npx db-migrate up -v -e $ENV --config database.js && next build",
     "compile": "next build",
     "start": "next start",
     "lint": "next lint"

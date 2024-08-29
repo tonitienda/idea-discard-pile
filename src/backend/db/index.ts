@@ -112,7 +112,7 @@ export async function createIdea(
     await query("BEGIN");
 
     await query(
-      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
       [
         idea.id,
         idea.title,
@@ -126,19 +126,19 @@ export async function createIdea(
     );
 
     await query(
-      `INSERT INTO ${schema}.idea_moderation (idea_id, idea_probability, spam_probability, spam_explanation, offensive_probability, relevance_probability, sentiment, uniqueness_probability, clarity_probability, cultural_sensitivity, engagement_potential) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      `INSERT INTO ${schema}.ideas_moderation (idea_id, idea_probability, spam_probability, spam_explanation, offensive_probability, relevance_probability, sentiment, uniqueness_probability, clarity_probability, cultural_sensitivity, engagement_potential) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         idea.id,
-        ideaModeration.ideaProbability,
-        ideaModeration.spamProbability,
+        ideaModeration.ideaProbability * 100,
+        ideaModeration.spamProbability * 100,
         ideaModeration.spamExplanation,
-        ideaModeration.offensiveProbability,
-        ideaModeration.relevanceProbability,
+        ideaModeration.offensiveProbability * 100,
+        ideaModeration.relevanceProbability * 100,
         ideaModeration.sentiment,
-        ideaModeration.uniquenessProbability,
-        ideaModeration.clarityProbability,
-        ideaModeration.culturalSensitivity,
-        ideaModeration.engagementPotential,
+        ideaModeration.uniquenessProbability * 100,
+        ideaModeration.clarityProbability * 100,
+        ideaModeration.culturalSensitivity * 100,
+        ideaModeration.engagementPotential * 100,
       ]
     );
 
