@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { Idea } from "../model";
+import { Idea, IdeaModeration } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
 import { getIdeasByUserId, createIdea } from "../../../backend/db";
@@ -64,6 +64,26 @@ export async function POST(req: NextRequest) {
   console.log("Idea completion", ideaCompletion);
 
   const id = uuid();
+
+  const idea: Idea = {
+    id,
+    title: ideaCompletion.title || "Untitled",
+    description,
+    tags:
+      ideaCompletion.tags?.map((t) => t.toLowerCase().replaceAll(" ", "")) ||
+      [],
+    owner: user,
+    isFlagged: [
+      ideaCompletion.spamProbability,
+      ideaCompletion.offensiveProbability,
+    ].some((v) => v > 0.5),
+  };
+
+  const ideaModeration: IdeaModeration = {
+    ideaId: id,
+    ...ideaCompletion,
+  };
+
   // TODO - Add fields in DB to store the spam and offensive scores.
   // Do not load the ideas with scores > 50% but let the user
   // Find their ideas in their dashboard so they can try to "unflag" them.
@@ -74,15 +94,7 @@ export async function POST(req: NextRequest) {
   // But think about how many ideas a user will have.
   // Also maybe premum have titles of 3-10 words and normal users 3-5 and cannot edit the title.
   // Maybe premium have more tags. Sell is as "better quallity ideas" and "more visibility"
-  await createIdea({
-    id,
-    title: ideaCompletion.title || "Untitled",
-    description,
-    tags:
-      ideaCompletion.tags?.map((t) => t.toLowerCase().replaceAll(" ", "")) ||
-      [],
-    owner: user,
-  });
+  await createIdea(idea, ideaModeration);
 
   return NextResponse.json({ id }, { status: 201 });
 }

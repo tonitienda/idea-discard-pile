@@ -1,6 +1,11 @@
 // DB Client
 import { Client, Pool } from "pg";
-import { Idea, User, AdminDashboard } from "../../app/api/model";
+import {
+  Idea,
+  User,
+  AdminDashboard,
+  IdeaModeration,
+} from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
 
@@ -17,6 +22,7 @@ const rowToIdea = (row: any): Idea => {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     tags: row.tags,
+    isFlagged: row.flagged,
   };
 };
 
@@ -59,7 +65,8 @@ export async function getIdeas(): Promise<Idea[]> {
     `SELECT i.*, u.handle, u.picture
     FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
     ON i.owner_id = u.id 
-    WHERE i.deleted_at IS NULL`
+    WHERE i.deleted_at IS NULL
+    ORDER BY i.created_at DESC`
   );
 
   return result.rows.map(rowToIdea);
@@ -94,20 +101,52 @@ export async function getIdeaById(id: string): Promise<Idea> {
   return rowToIdea(result.rows[0]);
 }
 
-export async function createIdea(idea: Idea): Promise<Idea> {
-  console.log("Creating idea", idea);
-  return query(
-    `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-    [
-      idea.id,
-      idea.title,
-      idea.description,
-      idea.tags,
-      idea.owner.id,
-      new Date().toISOString(),
-      new Date().toISOString(),
-    ]
-  );
+export async function createIdea(
+  idea: Idea,
+  ideaModeration: IdeaModeration
+): Promise<void> {
+  console.log("Creating idea", idea, ideaModeration);
+  // Start a transaction and insert both idea and idea moderation in the same transaction
+
+  try {
+    await query("BEGIN");
+
+    await query(
+      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [
+        idea.id,
+        idea.title,
+        idea.description,
+        idea.tags,
+        idea.owner.id,
+        idea.isFlagged,
+        new Date().toISOString(),
+        new Date().toISOString(),
+      ]
+    );
+
+    await query(
+      `INSERT INTO ${schema}.idea_moderation (idea_id, idea_probability, spam_probability, spam_explanation, offensive_probability, relevance_probability, sentiment, uniqueness_probability, clarity_probability, cultural_sensitivity, engagement_potential) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      [
+        idea.id,
+        ideaModeration.ideaProbability,
+        ideaModeration.spamProbability,
+        ideaModeration.spamExplanation,
+        ideaModeration.offensiveProbability,
+        ideaModeration.relevanceProbability,
+        ideaModeration.sentiment,
+        ideaModeration.uniquenessProbability,
+        ideaModeration.clarityProbability,
+        ideaModeration.culturalSensitivity,
+        ideaModeration.engagementPotential,
+      ]
+    );
+
+    await query("COMMIT");
+  } catch (e) {
+    await query("ROLLBACK");
+    throw e;
+  }
 }
 
 export async function updateIdea(idea: Idea): Promise<Idea> {

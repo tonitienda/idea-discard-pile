@@ -4,9 +4,33 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Store your API key in environment variables
 });
 
+/*
+
+Return JSON:
+- ideaProbability: (0-1)
+- spamProbability: (0-1)
+- spamExplanation: 1-2 short sentences
+- offensiveProbability: (0-1)
+- relevanceProbability: (0-1)
+- sentiment: "positive", "neutral", or "negative"
+- uniquenessProbability: (0-1)
+- clarityProbability: (0-1)
+- culturalSensitivity: (0-1)
+- engagementPotential: (0-1)
+- tags: ~3-8 tags ["tag1", "tag2", ...]
+- title: "2-5 word title"
+*/
 interface IdeaCompletion {
-  spam: number;
-  offensive: number;
+  ideaProbability: number;
+  spamProbability: number;
+  spamExplanation: string;
+  offensiveProbability: number;
+  relevanceProbability: number;
+  sentiment: string;
+  uniquenessProbability: number;
+  clarityProbability: number;
+  culturalSensitivity: number;
+  engagementPotential: number;
   tags: string[];
   title: string;
 }
@@ -21,23 +45,22 @@ export const completeIdea = async (
       {
         role: "user",
         content: `
-      Analyze the following idea and return the data in json format:
+Evaluate: "${ideaText}"
 
-      "${ideaText}"
-
-      1. spam: 
-      Based on the text, what is the probability that this idea is spam? Give a value between 0 and 1.
-
-      2. offensice:
-      Based on the text, what is the probability that this idea is offensive? Give a value between 0 and 1.
-
-      3. tags:
-      Suggest relevant tags for this idea. Provide 3-5 tags that best describe the content. Ideally 1 word.
-      Example: technology, innovation, design, cooking, mobile, web, vr, sustainability, nutrition, health, collaboratioh, etc.
-
-      4. title:
-      Generate a concise and descriptive title for this idea with around 2-5 words.
-    `,
+Return JSON:
+- ideaProbability: (0-1)
+- spamProbability: (0-1)
+- spamExplanation: 1-2 short sentences
+- offensiveProbability: (0-1)
+- relevanceProbability: (0-1)
+- sentiment: "positive", "neutral", or "negative"
+- uniquenessProbability: (0-1)
+- clarityProbability: (0-1)
+- culturalSensitivity: (0-1)
+- engagementPotential: (0-1)
+- tags: ~3-8 tags ["tag1", "tag2", ...]
+- title: "2-5 word title"
+ `,
       },
     ],
     // json format

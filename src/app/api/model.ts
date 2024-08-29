@@ -24,6 +24,22 @@ export type Idea = {
   updatedAt?: string;
   deletedAt?: string;
   owner: PublicUser;
+  moderation?: {};
+  isFlagged?: boolean;
+};
+
+export type IdeaModeration = {
+  ideaId: string;
+  ideaProbability: number;
+  spamProbability: number;
+  spamExplanation: string;
+  offensiveProbability: number;
+  relevanceProbability: number;
+  sentiment: string;
+  uniquenessProbability: number;
+  clarityProbability: number;
+  culturalSensitivity: number;
+  engagementPotential: number;
 };
 
 export type AdminDashboard = {

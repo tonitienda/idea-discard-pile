@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className={"container"}>
       <Head>
-        <title>A Pile of Ideas</title>
+        <title>Aidia Hub</title>
         <meta
           name="description"
           content="Share and discover innovative ideas"
@@ -17,7 +17,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="main">
-        <h1 className="title">A Pile of Ideas</h1>
+        <h1 className="title">Where ideas connect</h1>
         <div className="row">
           <div className="col-lg-7">
             <PlatformIntroduction />
