@@ -24,7 +24,7 @@ export const analyzeIdea = async (
   user: string
 ): Promise<IdeaAIAnalysis | null> => {
   const response = await client.chat.completions.create({
-    model: "gpt-3.5-turbo", // You can choose the model that suits your needs
+    model: "gpt-4-turbo", // You can choose the model that suits your needs
     messages: [
       {
         role: "user",
@@ -34,7 +34,6 @@ Evaluate: "${ideaText}"
 Return JSON:
 - ideaProbability: (0-1)
 - spamProbability: (0-1)
-- spamExplanation: 1-2 short sentences
 - offensiveProbability: (0-1)
 - relevanceProbability: (0-1)
 - sentiment: "positive", "neutral", or "negative"
@@ -63,40 +62,9 @@ Make sure the JSON is fully formed and closed properly.
     throw new Error("Failed to generate analysis");
   }
 
-  let parsedOutput = null;
-  const maxAttempts = 3;
-  let attempts = 0;
-  while (
-    attempts < maxAttempts &&
-    !(parsedOutput = tryParseJson<IdeaAIAnalysis>(output))
-  ) {
-    console.log("Parsed output is incomplete, continuing...");
-    const continuationResponse = await client.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "user",
-          content: `The following JSON output was incomplete. Please continue generating from where it was cut off:
-${output}
-Continue from here and complete the missing fields.`,
-        },
-      ],
-    });
+  const ideaAIAnalysis = JSON.parse(output);
 
-    output = continuationResponse.choices[0].message.content;
-
-    console.log("New output", output);
-  }
-
-  console.log("output", parsedOutput);
-
-  return parsedOutput as IdeaAIAnalysis;
-};
-
-const tryParseJson = <T>(jsonString: string): T | null => {
-  try {
-    return JSON.parse(jsonString) as T;
-  } catch (error) {
-    return null;
-  }
+  // TODO - NEXT STEP, is SPAM >= 5 or OFFENSIVE >= 5
+  // Request rationale about why it is spam or offensive
+  return ideaAIAnalysis as IdeaAIAnalysis;
 };

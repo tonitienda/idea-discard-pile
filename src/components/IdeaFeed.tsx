@@ -1,4 +1,5 @@
-// components/IdeaFeed.tsx
+"use client";
+
 import { useState } from "react";
 import { Idea } from "../app/api/model";
 import styles from "./ideafeed.module.css";
@@ -13,34 +14,35 @@ import {
   BsRocketFill,
 } from "react-icons/bs";
 import { BsHandThumbsDown } from "react-icons/bs";
+import DateComponent from "./DateComponent";
 
 interface IdeaFeedProps {
   ideas: Idea[];
 }
 
 export default function IdeaFeed({ ideas }: IdeaFeedProps) {
-  // const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
-  // const [inspiredIdeas, setInspiredIdeas] = useState<{
-  //   [key: string]: boolean;
-  // }>({});
-  // const [dislikedIdeas, setDislikedIdeas] = useState<{
-  //   [key: string]: boolean;
-  // }>({});
-  // const [workedIdeas, setWorkedIdeas] = useState<{ [key: string]: boolean }>(
-  //   {}
-  // );
+  const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
+  const [inspiredIdeas, setInspiredIdeas] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [dislikedIdeas, setDislikedIdeas] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [workedIdeas, setWorkedIdeas] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
-  // const handleAction = (ideaId: string, action: string) => {
-  //   if (action === "like") {
-  //     setLikedIdeas({ ...likedIdeas, [ideaId]: !likedIdeas[ideaId] });
-  //   } else if (action === "dislike") {
-  //     setDislikedIdeas({ ...dislikedIdeas, [ideaId]: !dislikedIdeas[ideaId] });
-  //   } else if (action === "inspire") {
-  //     setInspiredIdeas({ ...inspiredIdeas, [ideaId]: !inspiredIdeas[ideaId] });
-  //   } else if (action === "work") {
-  //     setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
-  //   }
-  // };
+  const handleAction = (ideaId: string, action: string) => {
+    if (action === "like") {
+      setLikedIdeas({ ...likedIdeas, [ideaId]: !likedIdeas[ideaId] });
+    } else if (action === "dislike") {
+      setDislikedIdeas({ ...dislikedIdeas, [ideaId]: !dislikedIdeas[ideaId] });
+    } else if (action === "inspire") {
+      setInspiredIdeas({ ...inspiredIdeas, [ideaId]: !inspiredIdeas[ideaId] });
+    } else if (action === "work") {
+      setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
+    }
+  };
 
   return (
     <div className={styles.feed}>
@@ -55,7 +57,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             <div className={styles.userInfo}>
               <h3 className={styles.ownerHandle}>{idea.owner.handle}</h3>
               <p className={styles.meta}>
-                {new Date(idea.createdAt).toLocaleString()}
+                <DateComponent date={new Date(idea.createdAt)} />
               </p>
             </div>
           </div>
@@ -70,7 +72,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
             ))}
           </div>
-          {/* { <div className={styles.actions}>
+          <div className={styles.actions}>
             <button
               onClick={() => handleAction(idea.id, "like")}
               className={`${styles.actionButton} ${
@@ -117,9 +119,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             >
               🔗 Share
             </button>
-          
-           
-          </div> */}
+          </div>
         </div>
       ))}
     </div>
