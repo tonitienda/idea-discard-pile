@@ -19,28 +19,28 @@ interface IdeaFeedProps {
 }
 
 export default function IdeaFeed({ ideas }: IdeaFeedProps) {
-  const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
-  const [inspiredIdeas, setInspiredIdeas] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [dislikedIdeas, setDislikedIdeas] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [workedIdeas, setWorkedIdeas] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  // const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
+  // const [inspiredIdeas, setInspiredIdeas] = useState<{
+  //   [key: string]: boolean;
+  // }>({});
+  // const [dislikedIdeas, setDislikedIdeas] = useState<{
+  //   [key: string]: boolean;
+  // }>({});
+  // const [workedIdeas, setWorkedIdeas] = useState<{ [key: string]: boolean }>(
+  //   {}
+  // );
 
-  const handleAction = (ideaId: string, action: string) => {
-    if (action === "like") {
-      setLikedIdeas({ ...likedIdeas, [ideaId]: !likedIdeas[ideaId] });
-    } else if (action === "dislike") {
-      setDislikedIdeas({ ...dislikedIdeas, [ideaId]: !dislikedIdeas[ideaId] });
-    } else if (action === "inspire") {
-      setInspiredIdeas({ ...inspiredIdeas, [ideaId]: !inspiredIdeas[ideaId] });
-    } else if (action === "work") {
-      setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
-    }
-  };
+  // const handleAction = (ideaId: string, action: string) => {
+  //   if (action === "like") {
+  //     setLikedIdeas({ ...likedIdeas, [ideaId]: !likedIdeas[ideaId] });
+  //   } else if (action === "dislike") {
+  //     setDislikedIdeas({ ...dislikedIdeas, [ideaId]: !dislikedIdeas[ideaId] });
+  //   } else if (action === "inspire") {
+  //     setInspiredIdeas({ ...inspiredIdeas, [ideaId]: !inspiredIdeas[ideaId] });
+  //   } else if (action === "work") {
+  //     setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
+  //   }
+  // };
 
   return (
     <div className={styles.feed}>
@@ -70,7 +70,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
             ))}
           </div>
-          <div className={styles.actions}>
+          {/* { <div className={styles.actions}>
             <button
               onClick={() => handleAction(idea.id, "like")}
               className={`${styles.actionButton} ${
@@ -117,7 +117,9 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             >
               🔗 Share
             </button>
-          </div>
+          
+           
+          </div> */}
         </div>
       ))}
     </div>
