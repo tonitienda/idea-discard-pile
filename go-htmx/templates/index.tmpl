@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charSet="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Idea DISCARD PILE</title>
+    <meta
+      name="description"
+      content="share ideas with the community, find inspiration, build collaboration"
+    />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+   </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light" data-bs-theme="light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Aidia Hub</a>
+      </div>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" href="/api/auth/login">login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/api/auth/login">sign_up</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="container" style="padding-top: 60px">
+      <div class="container">
+        <main class="main">
+          <h1 class="title">Where ideas connect</h1>
+          <div class="row">
+            <div class="col-lg-7">
+              <section class="my-5">
+                <p class="lead text-left">
+                  A Pile of Ideas is a platform where innovators can share their
+                  dormant ideas, find inspiration from others, and collaborate
+                  to bring concepts to life. Whether you&#x27;re an
+                  entrepreneur, creator, or just someone with a great idea, this
+                  is the place to let your imagination flourish.
+                </p>
+              </section>
+            </div>
+            <div class="col-lg-5">
+              <section class="text-center my-5">
+                <div style="margin-top: auto; margin-bottom: auto">
+                  <a href="/api/auth/login"
+                    ><button
+                      class="btn btn-primary btn-lg"
+                      style="
+                        width: 300px;
+                        height: 150px;
+                        font-size: 1.8rem;
+                        word-spacing: 10px;
+                        line-height: 2.5rem;
+                      "
+                    >
+                      Share your idea
+                    </button></a
+                  >
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-8">
+              <section class="my-5">
+                <div class="landing_carouselContainer">
+                    <div class="landing_carousel_carouselItem">
+                        <div class="landing_carousel_ideaContent">
+                          <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724445525/spacex-VBNb52J8Trk-unsplash_sot6ig.jpg"
+                          alt="Space debris recycling satellite"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Space debris recycling satellite</h3>
+                        <p>
+                          A satellite that collects space debris and recycles it
+                          into raw materials for 3D printing in space.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="landing_carousel_carouselItem">
+                    <div class="landing_carousel_ideaContent">
+                      <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724446327/brooke-lark-jUPOXXRNdcA-unsplash_vdffec.jpg"
+                          alt="Smart fridge recipe assistant"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Smart fridge recipe assistant</h3>
+                        <p>
+                          A smart kitchen appliance that scans your fridge and
+                          suggests recipes based on the ingredients you have.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="landing_carousel_carouselItem">
+                    <div class="landing_carousel_ideaContent">
+                      <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724446487/theodor-vasile-bV0XvbRPvM0-unsplash_gtdq8p.jpg"
+                          alt="Modular car design"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Modular car design</h3>
+                        <p>
+                          A modular car that allows users to swap out components
+                          like seats, dashboards, and storage areas to customize
+                          for different needs.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="landing_carousel_carouselItem">
+                    <div class="landing_carousel_ideaContent">
+                      <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724448969/cj-dayrit-GS5zb9JqWuY-unsplash_oohrgp.jpg"
+                          alt="Home gardening robot"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Home gardening robot</h3>
+                        <p>
+                          A home robot that automates gardening tasks like
+                          planting, watering, and weeding.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="landing_carousel_carouselItem">
+                    <div class="landing_carousel_ideaContent">
+                      <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724449158/eduard-uY2kic9wlmc-unsplash_luoqx7.jpg"
+                          alt="Chore gamification app"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Chore gamification app</h3>
+                        <p>
+                          An app that gamifies daily chores by allowing users to
+                          earn points and rewards for completing tasks at home.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="landing_carousel_carouselItem">
+                    <div class="landing_carousel_ideaContent">
+                      <div class="landing_carousel_imageContainer">
+                        <img
+                          src="https://res.cloudinary.com/ddkok43g3/image/upload/t_Square/v1724449287/david-henrichs-72AYEEBJpz4-unsplash_xp99ju.jpg"
+                          alt="Drone crop monitoring system"
+                        />
+                      </div>
+                      <div class="landing_carousel_textContainer">
+                        <h3>Drone crop monitoring system</h3>
+                        <p>
+                          A drone system that monitors crop health and
+                          automatically applies fertilizers or pesticides only
+                          where needed.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <section class="my-5">
+            <h2 class="text-center mb-4">Benefits</h2>
+            <div class="row">
+              <div class="col-md-4">
+                <h3>Find Inspiration</h3>
+                <p>Discover unique ideas from innovators around the world.</p>
+              </div>
+              <div class="col-md-4">
+                <h3>Share Your Vision</h3>
+                <p>
+                  Give your discarded ideas a new life by sharing them with our
+                  community.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <h3>Collaborate</h3>
+                <p>
+                  Connect with like-minded individuals to bring ideas to
+                  reality.
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+        <footer class="footer"></footer>
+      </div>
+    </div>
+   <script lang="javascript">
+      // Iterate though all the carousel items and add the active class
+      // one by one to create a carousel effect
+        const carouselItems = document.querySelectorAll('.landing_carousel_carouselItem');
+        console.log(carouselItems)
+        let index = 0;
+        carouselItems[index].classList.add('active');
+
+        setInterval(() => {
+          carouselItems[index].classList.remove('active');
+          index = (index + 1) % carouselItems.length;  
+          carouselItems[index].classList.add('active');
+        }, 3000);
+    </script>
+  </body>
+</html>
