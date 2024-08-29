@@ -42,7 +42,7 @@ export default async function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href={`https://bootswatch.com/5/${template}/bootstrap.css`}
+          href={`https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/${template}/bootstrap.min.css`}
         />
       </head>
       <UserProvider>
