@@ -1,44 +1,20 @@
-"use client";
-// TODO - See how to avoid use client and render in the server
+"use server";
 
-// pages/index.tsx
-import { useState, useEffect } from "react";
 import Head from "next/head";
 import IdeaForm from "../components/IdeaForm";
 
 import IdeaFeed from "../components/IdeaFeed";
-import { Idea, User } from "../app/api/model";
+import { Idea } from "./api/model";
+import FeedClientWrapper from "../components/FeedClientWrapper";
 
-export default function Home() {
-  const [ideas, setIdeas] = useState<Idea[]>([]);
+export default async function Home() {
+  const data = await fetch(`${process.env.BASE_URL}/api/feed`);
 
-  useEffect(() => {
-    fetch("/api/ideas")
-      .then((response) => (response.ok ? response.json() : { items: [] }))
-      .then((data) => setIdeas(data.items));
-  }, []);
+  console.log("data", data);
 
-  const addIdea = async (newIdea: Partial<Idea>): Promise<void> => {
-    const ideaWithDetails: Idea = {
-      ...newIdea,
-      tags: newIdea.tags || [],
-    } as Idea;
-    return fetch("/api/ideas", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(ideaWithDetails),
-    })
-      .then((response) => response.json())
-      .then((data) => fetch(`/api/ideas/${data.id}`))
-      .then((response) => (response.ok ? response.json() : null))
-      .then((idea) => {
-        if (idea) {
-          setIdeas((ideas) => [idea, ...ideas]);
-        }
-      });
-  };
+  const json = await data.json();
+  const ideas = json.items;
+  console.log("ideas", ideas);
 
   return (
     <div>
@@ -53,13 +29,7 @@ export default function Home() {
 
       <main className="main">
         <div className="row">
-          <div className="col-lg-12">
-            <IdeaForm onSubmit={addIdea} />
-          </div>
-
-          <div className="col-lg-12">
-            <IdeaFeed ideas={ideas} />
-          </div>
+          <FeedClientWrapper initialFeed={ideas} />
         </div>
       </main>
     </div>
