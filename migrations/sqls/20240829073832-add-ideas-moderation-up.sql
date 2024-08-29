@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS ideas_moderation (
   cultural_sensitivity smallint NOT NULL,
   engagement_potential smallint NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (idea_id) REFERENCES ideas(id),
+  FOREIGN KEY (idea_id) REFERENCES ideas(id)
 );
