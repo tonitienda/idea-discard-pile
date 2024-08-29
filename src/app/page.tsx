@@ -2,9 +2,8 @@ import Head from "next/head";
 import IdeaForm from "../components/IdeaForm";
 
 import IdeaFeed from "../components/IdeaFeed";
-import { Idea } from "../app/api/model";
 
-export default async function Home(props: { ideas: Idea[] }) {
+export default async function Home() {
   const data = await fetch(`${process.env.BASE_URL}/api/feed`);
 
   console.log("data", data);
