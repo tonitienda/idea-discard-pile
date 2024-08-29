@@ -153,15 +153,12 @@ const exampleIdeas = [
 export async function GET(req: NextRequest) {
   try {
     console.log("GET", req.url);
-    // FIXME - See why this is not working
     const user = await getUser(req);
-    // if (!user) {
-    //   return redirectToLogin(req);
-    // }
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const items: Idea[] = await getIdeas();
-
-    console.log("Ideas", items);
 
     const ideas = [];
 
@@ -193,8 +190,6 @@ export async function GET(req: NextRequest) {
     }
 
     console.log("Total ideas", ideas.length);
-    console.log("Ideas", ideas);
-
     return NextResponse.json({ items: ideas }, { status: 200 });
   } catch (error) {
     console.error(error);

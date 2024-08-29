@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import { Idea, IdeaModeration } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
-import { getIdeasByUserId, createIdea } from "../../../backend/db";
+import { createIdea, getIdeas, getIdeasByUserId } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 
 const EmptyIdea: Idea = {
@@ -19,18 +19,14 @@ const EmptyIdea: Idea = {
 export async function GET(req: NextRequest) {
   try {
     console.log("GET", req.url);
-    // FIXME - See why this is not working
     const user = await getUser(req);
-    // if (!user) {
-    //   return redirectToLogin(req);
-    // }
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const items: Idea[] = await getIdeasByUserId(user.id);
 
-    console.log("Ideas", items);
-
     console.log("Total ideas", items.length);
-
     return NextResponse.json({ items }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -101,10 +97,7 @@ export async function POST(req: NextRequest) {
     ...ideaCompletion,
   };
 
-  // TODO - Add fields in DB to store the spam and offensive scores.
-  // Do not load the ideas with scores > 50% but let the user
-  // Find their ideas in their dashboard so they can try to "unflag" them.
-  // Ban users with more than 3 flagged ideas. They are not allowed to post ideas anymore.
+  // TODO
   // Limit users to a max of 1 idea per day and a max of x characters per idea. (each token costs money)
   // Premium users can get more ideas per day (10?), longer ideas, and the description corrected
   // Maybe the difference between premium and premium+ is around the number of ideas or the length of their descriptions.

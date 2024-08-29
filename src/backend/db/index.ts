@@ -66,6 +66,7 @@ export async function getIdeas(): Promise<Idea[]> {
     FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
     ON i.owner_id = u.id 
     WHERE i.deleted_at IS NULL
+    AND i.flagged = false
     ORDER BY i.created_at DESC`
   );
 
@@ -73,12 +74,14 @@ export async function getIdeas(): Promise<Idea[]> {
 }
 
 export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
+  console.log("Looking for ideas by user", userId);
   const result = await query(
     `SELECT i.*, u.handle, u.picture
       FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
       ON i.owner_id = u.id 
       WHERE i.deleted_at IS NULL
-      AND i.owner_id = $1`,
+      AND i.owner_id = $1
+      ORDER BY i.created_at DESC`,
     [userId]
   );
 

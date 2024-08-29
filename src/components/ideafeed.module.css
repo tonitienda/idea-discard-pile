@@ -16,6 +16,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.4s ease;
   }
+
+  .flaggedIdea {
+    border: 1px solid #d00;
+    
+  }
   
   .idea:hover {
     background-color: #f7f7f7;

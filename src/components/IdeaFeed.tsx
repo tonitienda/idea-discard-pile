@@ -47,7 +47,12 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
   return (
     <div className={styles.feed}>
       {ideas.map((idea) => (
-        <div key={idea.id} className={styles.idea}>
+        <div
+          key={idea.id}
+          className={`${styles.idea} ${
+            idea.isFlagged ? styles.flaggedIdea : ""
+          }`}
+        >
           <div className={styles.header}>
             <img
               src={idea.owner.picture}

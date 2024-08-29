@@ -10,6 +10,7 @@ export const getUser = async (req: NextRequest): Promise<User | null> => {
   console.log("session", session);
 
   if (!session || !session.user || !session.user.sub) {
+    console.log("No session");
     return null;
   }
 
