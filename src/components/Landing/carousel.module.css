@@ -12,12 +12,32 @@
     left: 0;
     width: 100%;
     height: 100%;
+    display: none;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
   }
   
+  @keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+    
+}
+
   .carouselItem.active {
-    opacity: 1;
+    display:block; 
+    /* The duration of this animation is connected to the setInterval function in the carousel.js file
+    */
+    animation: fadeInOut 3s 1;   
+    
   }
   
   .ideaContent {

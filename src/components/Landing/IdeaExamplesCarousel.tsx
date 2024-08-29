@@ -144,7 +144,7 @@ export default function IdeaExamplesCarousel() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIdea((prevIdea) => (prevIdea + 1) % ideas.length);
-    }, 5000);
+    }, 3200);
     return () => clearInterval(timer);
   }, []);
 
