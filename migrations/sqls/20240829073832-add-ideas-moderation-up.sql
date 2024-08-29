@@ -2,7 +2,7 @@
 ALTER TABLE ideas ADD COLUMN IF NOT EXISTS "flagged" BOOLEAN DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS ideas_moderation (
-  idea_id INTEGER NOT NULL PRIMARY KEY,
+  idea_id UUID NOT NULL PRIMARY KEY,
   idea_probability smallint NOT NULL,
   spam_probability smallint NOT NULL,
   spam_explanation TEXT NOT NULL,
