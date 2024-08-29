@@ -5,6 +5,7 @@ import NavBar from "../components/NavBar";
 import { getSession } from "@auth0/nextjs-auth0";
 import Landing from "../components/Landing/index";
 import LandingNavBar from "../components/Landing/NavBar";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Idea DISCARD PILE",
@@ -60,6 +61,11 @@ export default async function RootLayout({
             </div>
           )}
           <Analytics />
+
+          {
+            // Google tag (gtag.js)
+          }
+          <GoogleAnalytics gaId="G-2KK1VCX2DJ" />
         </body>
       </UserProvider>
     </html>
