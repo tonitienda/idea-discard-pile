@@ -2,6 +2,11 @@
 // For example IdeaRequest does not have createdAt, updatedAt and is generated upon insertion
 // But when retrieving it, it has createdAt, updatedAt, etc.
 
+export const INTERACTION_LOVE = "iloveit";
+export const INTERACTION_NOT_USEFUL = "notuseful";
+export const INTERACTION_FUNNY = "funny";
+export const INTERACTION_SUPPORT = "icanhelp";
+
 export type PublicUser = {
   id: string;
   handle: string;
@@ -26,6 +31,8 @@ export type Idea = {
   owner: PublicUser;
   moderation?: {};
   isFlagged?: boolean;
+  interactions: { [key: string]: number };
+  myInteractions: { [key: string]: boolean };
 };
 
 export type IdeaModeration = {

@@ -5,6 +5,10 @@ import {
   User,
   AdminDashboard,
   IdeaModeration,
+  INTERACTION_LOVE,
+  INTERACTION_FUNNY,
+  INTERACTION_NOT_USEFUL,
+  INTERACTION_SUPPORT,
 } from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
@@ -23,6 +27,18 @@ const rowToIdea = (row: any): Idea => {
     updatedAt: row.updated_at,
     tags: row.tags,
     isFlagged: row.flagged,
+    interactions: {
+      [INTERACTION_LOVE]: 0,
+      [INTERACTION_FUNNY]: 0,
+      [INTERACTION_NOT_USEFUL]: 0,
+      [INTERACTION_SUPPORT]: 0,
+    },
+    myInteractions: {
+      [INTERACTION_LOVE]: false,
+      [INTERACTION_FUNNY]: false,
+      [INTERACTION_NOT_USEFUL]: false,
+      [INTERACTION_SUPPORT]: false,
+    },
   };
 };
 

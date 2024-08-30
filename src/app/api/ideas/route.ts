@@ -1,5 +1,12 @@
 import { v4 as uuid } from "uuid";
-import { Idea, IdeaModeration } from "../model";
+import {
+  Idea,
+  IdeaModeration,
+  INTERACTION_FUNNY,
+  INTERACTION_LOVE,
+  INTERACTION_NOT_USEFUL,
+  INTERACTION_SUPPORT,
+} from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../users";
 import { createIdea, getIdeas, getIdeasByUserId } from "../../../backend/db";
@@ -14,6 +21,8 @@ const EmptyIdea: Idea = {
   createdAt: "",
   updatedAt: "",
   owner: null,
+  interactions: {},
+  myInteractions: {},
 };
 
 export async function GET(req: NextRequest) {
@@ -90,6 +99,18 @@ export async function POST(req: NextRequest) {
       ideaCompletion.spamProbability,
       ideaCompletion.offensiveProbability,
     ].some((v) => v > 0.5),
+    interactions: {
+      [INTERACTION_LOVE]: 0,
+      [INTERACTION_FUNNY]: 0,
+      [INTERACTION_NOT_USEFUL]: 0,
+      [INTERACTION_SUPPORT]: 0,
+    },
+    myInteractions: {
+      [INTERACTION_LOVE]: false,
+      [INTERACTION_FUNNY]: false,
+      [INTERACTION_NOT_USEFUL]: false,
+      [INTERACTION_SUPPORT]: false,
+    },
   };
 
   const ideaModeration: IdeaModeration = {
