@@ -3,11 +3,11 @@
 import Head from "next/head";
 
 import FeedClientWrapper from "../components/FeedClientWrapper";
-import { getIdeas } from "../backend/db";
+import { getFeed } from "../backend/ideas";
 
 export default async function Home() {
   // TODO - Make sure the user is logged in
-  const ideas = await getIdeas();
+  const ideas = await getFeed();
 
   return (
     <div>

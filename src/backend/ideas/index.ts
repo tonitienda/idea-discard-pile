@@ -1,9 +1,7 @@
 import { v4 as uuid } from "uuid";
-import { Idea } from "../model";
-import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../users";
-import { getIdeas } from "../../../backend/db";
-import { getFeed } from "../../../backend/ideas";
+
+import { Idea } from "../../app/api/model";
+import { getIdeas } from "../db";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -151,22 +149,38 @@ const exampleIdeas = [
   },
 ];
 
-export async function GET(req: NextRequest) {
-  try {
-    console.log("GET", req.url);
-    const user = await getUser(req);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function getFeed(): Promise<Idea[]> {
+  const items: Idea[] = await getIdeas();
+
+  const ideas = [];
+
+  if (items.length < 20) {
+    // Alternate the example ideas with the fetched ideas
+    const missingIdeas = 20 - items.length;
+    const interval = Math.ceil(exampleIdeas.length / missingIdeas);
+
+    for (let i = 0; i < 20; i++) {
+      if (i % interval === 0) {
+        ideas.push({
+          ...EmptyIdea,
+          ...exampleIdeas[i / interval],
+          id: uuid(),
+          createdAt: new Date().toISOString(),
+          owner: {
+            id: "1",
+            handle: "@ideabot",
+            picture: "/images/ideabot_avatar.webp",
+          },
+        });
+      }
+      if (i < items.length) {
+        ideas.push(items[i]);
+      }
     }
-
-    const ideas = await getFeed();
-
-    return NextResponse.json({ items: ideas }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "An error occurred while fetching ideas" },
-      { status: 500 }
-    );
+  } else {
+    ideas.push(...items);
   }
+
+  console.log("Total ideas", ideas.length);
+  return ideas;
 }
