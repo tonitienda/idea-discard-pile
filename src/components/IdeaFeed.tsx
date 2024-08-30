@@ -12,9 +12,26 @@ import {
   BsLightbulbFill,
   BsRocket,
   BsRocketFill,
+  BsHearts,
+  BsHeart,
+  BsEmojiLaughing,
+  BsEmojiLaughingFill,
+  BsPerson,
+  BsPersonRaisedHand,
+  BsEmojiNeutral,
+  BsHeartbreak,
+  BsHeartbreakFill,
 } from "react-icons/bs";
+import { MdPersonAdd, MdOutlineMoodBad } from "react-icons/md";
+
 import { BsHandThumbsDown } from "react-icons/bs";
 import DateComponent from "./DateComponent";
+import {
+  INTERACTION_FUNNY,
+  INTERACTION_LOVE,
+  INTERACTION_NOT_USEFUL,
+  INTERACTION_SUPPORT,
+} from "../app/api/model";
 
 interface IdeaFeedProps {
   ideas: Idea[];
@@ -35,26 +52,26 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
     );
   }
 
-  const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
-  const [inspiredIdeas, setInspiredIdeas] = useState<{
+  const [lovedIdeas, setLovedIdeas] = useState<{ [key: string]: boolean }>({});
+  const [funnyIdeas, setFunnyIdeas] = useState<{
     [key: string]: boolean;
   }>({});
-  const [dislikedIdeas, setDislikedIdeas] = useState<{
+  const [uselessIdeas, setUselessIdeas] = useState<{
     [key: string]: boolean;
   }>({});
-  const [workedIdeas, setWorkedIdeas] = useState<{ [key: string]: boolean }>(
+  const [supportIdeas, setSupportIdeas] = useState<{ [key: string]: boolean }>(
     {}
   );
 
   const handleAction = (ideaId: string, action: string) => {
-    if (action === "like") {
-      setLikedIdeas({ ...likedIdeas, [ideaId]: !likedIdeas[ideaId] });
-    } else if (action === "dislike") {
-      setDislikedIdeas({ ...dislikedIdeas, [ideaId]: !dislikedIdeas[ideaId] });
-    } else if (action === "inspire") {
-      setInspiredIdeas({ ...inspiredIdeas, [ideaId]: !inspiredIdeas[ideaId] });
-    } else if (action === "work") {
-      setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
+    if (action === INTERACTION_LOVE) {
+      setLovedIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
+    } else if (action === INTERACTION_FUNNY) {
+      setFunnyIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
+    } else if (action === INTERACTION_NOT_USEFUL) {
+      setUselessIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
+    } else if (action === INTERACTION_SUPPORT) {
+      setSupportIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
     }
   };
 
@@ -91,46 +108,42 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
             ))}
           </div>
-          <div className={styles.actions}>
+          <div className={`${styles.actions}`}>
             <button
-              onClick={() => handleAction(idea.id, "like")}
-              className={`${styles.actionButton} ${
-                likedIdeas[idea.id] ? styles.liked : ""
+              onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
+              className={`${styles.actionButton} ${styles.love} ${
+                lovedIdeas[idea.id] ? styles.loveActive : ""
               }`}
             >
-              {likedIdeas[idea.id] ? (
-                <BsHandThumbsUpFill />
+              {lovedIdeas[idea.id] ? <BsHearts /> : <BsHeart />}
+            </button>
+            <button
+              onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
+              className={`${styles.actionButton} ${styles.support} ${
+                supportIdeas[idea.id] ? styles.supportActive : ""
+              }`}
+            >
+              {supportIdeas[idea.id] ? <BsPerson /> : <MdPersonAdd />}
+            </button>
+            <button
+              onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
+              className={`${styles.actionButton} ${styles.funny} ${
+                funnyIdeas[idea.id] ? styles.funnyActive : ""
+              }`}
+            >
+              {funnyIdeas[idea.id] ? (
+                <BsEmojiLaughingFill />
               ) : (
-                <BsHandThumbsUp />
+                <BsEmojiNeutral />
               )}
             </button>
             <button
-              onClick={() => handleAction(idea.id, "dislike")}
-              className={`${styles.actionButton} ${
-                dislikedIdeas[idea.id] ? styles.disliked : ""
+              onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
+              className={`${styles.actionButton} ${styles.useless} ${
+                uselessIdeas[idea.id] ? styles.uselessActive : ""
               }`}
             >
-              {dislikedIdeas[idea.id] ? (
-                <BsHandThumbsDownFill />
-              ) : (
-                <BsHandThumbsDown />
-              )}
-            </button>
-            <button
-              onClick={() => handleAction(idea.id, "inspire")}
-              className={`${styles.actionButton} ${
-                inspiredIdeas[idea.id] ? styles.inspired : ""
-              }`}
-            >
-              {inspiredIdeas[idea.id] ? <BsLightbulbFill /> : <BsLightbulb />}
-            </button>
-            <button
-              onClick={() => handleAction(idea.id, "work")}
-              className={`${styles.actionButton} ${
-                workedIdeas[idea.id] ? styles.worked : ""
-              }`}
-            >
-              {workedIdeas[idea.id] ? <BsRocketFill /> : <BsRocket />}
+              {uselessIdeas[idea.id] ? <BsHeartbreakFill /> : <BsHeartbreak />}
             </button>
             <button
               onClick={() => alert("Share clicked!")}

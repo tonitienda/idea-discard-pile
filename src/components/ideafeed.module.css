@@ -118,6 +118,7 @@
     display: flex;
     justify-content: space-around;
     margin-top: 10px;
+    
   }
   
   .actionButton {
@@ -134,28 +135,42 @@
     transform: scale(1.1);
   }
   
-  .liked {
-    color: #0a0;
-    animation: liked 0.4s ease-in-out;
-  }
-  
-  .disliked {
+  .love {
     color: #f00;
-    animation: disliked 0.4s ease-in-out;
+    border: none;
+    outline: none;
+  }
+
+  .loveActive{
+    animation: love 0.7s ease-in-out;
   }
   
-  .inspired {
-    color: #aa0;
-    animation: inspired 0.4s ease-in-out;
+  .useless {
+    color: #00f;
+  }
+  .uselessActive {
+    animation: useless 0.7s ease-in-out;
+  }
+  
+  .support {
+    color: #0a0;
   }
 
 
-  .worked {
-    color: #333;
-    animation: inspired 0.4s ease-in-out;
+  .supportActive {
+    animation: support 0.7s ease-in-out;
+  }
+
+  .funny {
+    color: #70f;
+  }
+
+
+  .funnyActive {
+    animation: useless 0.7s ease-in-out;
   }
   
-  @keyframes liked {
+  @keyframes love {
     0% {
       transform: scale(1);
       color: #fff;
@@ -163,22 +178,7 @@
     }
     50% {
       transform: scale(1.4);
-    }
-    100% {
-      transform: scale(1);
-      color: #0a0;
-
-    }
-  }
-  
-  @keyframes disliked {
-    0% {
-      transform: scale(1);
-      color: #fff;
-
-    }
-    50% {
-      transform: scale(1.4);
+      color: #ccc;
     }
     100% {
       transform: scale(1);
@@ -187,21 +187,40 @@
     }
   }
   
-  @keyframes inspired {
+  @keyframes useless {
+    0% {
+      transform: scale(1);
+      color: #fff;
+
+    }
+    50% {
+      transform: scale(1.4);
+      color: #ccc;
+    }
+    100% {
+      transform: scale(1);
+      color: #00f;
+
+    }
+  }
+  
+  @keyframes support {
     0% {
       transform: scale(1);
         color: #fff;
     }
     50% {
       transform: scale(1.4);
+      color: #ccc;
+
     }
     100% {
       transform: scale(1);
-      color: #aa0;
+      color: #0a0;
     }
   }
 
-  @keyframes worked {
+  @keyframes funny {
     0% {
       transform: scale(1);
       color: #fff;
@@ -209,10 +228,11 @@
     }
     50% {
       transform: scale(2);
+      color: #ccc;
     }
     100% {
       transform: scale(1);
-      color: #00f;
+      color: #70f;
     }
   }
   
