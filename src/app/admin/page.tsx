@@ -44,13 +44,13 @@ const AdminDashboard = () => {
     dailyIdeaCounts: [10, 15, 12, 25, 30, 22, 16],
   });
 
-  // Fake data for interactions
-  const [interactionStats, setInteractionStats] = useState({
+  // Fake data for reactions
+  const [reactionStats, setReactionsStats] = useState({
     totalLikes: 1000,
     totalDislikes: 200,
     totalInspiring: 150,
     totalToWork: 100,
-    dailyInteractions: {
+    dailyReactionss: {
       likes: [50, 60, 40, 70, 55, 45, 75],
       dislikes: [10, 20, 15, 5, 25, 10, 15],
       inspiring: [20, 25, 18, 22, 30, 28, 35],
@@ -144,11 +144,11 @@ const AdminDashboard = () => {
       </section>
 
       <section className="col-lg-6">
-        <h2>Interactions</h2>
-        <p>Total Likes: {interactionStats.totalLikes}</p>
-        <p>Total Dislikes: {interactionStats.totalDislikes}</p>
-        <p>Total Inspiring: {interactionStats.totalInspiring}</p>
-        <p>Total To Work: {interactionStats.totalToWork}</p>
+        <h2>Reactionss</h2>
+        <p>Total Likes: {reactionStats.totalLikes}</p>
+        <p>Total Dislikes: {reactionStats.totalDislikes}</p>
+        <p>Total Inspiring: {reactionStats.totalInspiring}</p>
+        <p>Total To Work: {reactionStats.totalToWork}</p>
         <Line
           data={{
             labels: [
@@ -163,28 +163,28 @@ const AdminDashboard = () => {
             datasets: [
               {
                 label: "Likes Per Day",
-                data: interactionStats.dailyInteractions.likes,
+                data: reactionStats.dailyReactionss.likes,
                 borderColor: "rgba(255, 99, 132, 1)",
                 backgroundColor: "rgba(255, 99, 132, 0.2)",
                 fill: true,
               },
               {
                 label: "Dislikes Per Day",
-                data: interactionStats.dailyInteractions.dislikes,
+                data: reactionStats.dailyReactionss.dislikes,
                 borderColor: "rgba(255, 159, 64, 1)",
                 backgroundColor: "rgba(255, 159, 64, 0.2)",
                 fill: true,
               },
               {
                 label: "Inspiring Per Day",
-                data: interactionStats.dailyInteractions.inspiring,
+                data: reactionStats.dailyReactionss.inspiring,
                 borderColor: "rgba(153, 102, 255, 1)",
                 backgroundColor: "rgba(153, 102, 255, 0.2)",
                 fill: true,
               },
               {
                 label: "To Work Per Day",
-                data: interactionStats.dailyInteractions.towork,
+                data: reactionStats.dailyReactionss.towork,
                 borderColor: "rgba(102, 255, 153, 1)",
                 backgroundColor: "rgba(102, 255, 153, 0.2)",
                 fill: true,

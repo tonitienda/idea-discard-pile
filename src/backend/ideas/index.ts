@@ -18,13 +18,13 @@ const EmptyIdea: Idea = {
   createdAt: "",
   updatedAt: "",
   owner: null,
-  interactions: {
+  reactions: {
     [INTERACTION_LOVE]: 0,
     [INTERACTION_FUNNY]: 0,
     [INTERACTION_NOT_USEFUL]: 0,
     [INTERACTION_SUPPORT]: 0,
   },
-  myInteractions: {
+  myReactions: {
     [INTERACTION_LOVE]: false,
     [INTERACTION_FUNNY]: false,
     [INTERACTION_NOT_USEFUL]: false,
@@ -168,8 +168,8 @@ const exampleIdeas = [
   },
 ];
 
-export async function getFeed(): Promise<Idea[]> {
-  const items: Idea[] = await getIdeas();
+export async function getFeed(userId?: string): Promise<Idea[]> {
+  const items: Idea[] = await getIdeas(userId);
 
   const ideas: Idea[] = [];
   // TODO - Add example ideas directly to the DB (or via an admin interface) so they have

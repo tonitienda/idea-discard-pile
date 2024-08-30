@@ -31,8 +31,8 @@ export type Idea = {
   owner: PublicUser;
   moderation?: {};
   isFlagged?: boolean;
-  interactions: { [key: string]: number };
-  myInteractions: { [key: string]: boolean };
+  reactions: { [key: string]: number };
+  myReactions: { [key: string]: boolean };
   isExample: boolean;
 };
 

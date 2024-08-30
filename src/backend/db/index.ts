@@ -27,17 +27,19 @@ const rowToIdea = (row: any): Idea => {
     updatedAt: row.updated_at,
     tags: row.tags,
     isFlagged: row.flagged,
-    interactions: {
+    reactions: {
       [INTERACTION_LOVE]: 0,
       [INTERACTION_FUNNY]: 0,
       [INTERACTION_NOT_USEFUL]: 0,
       [INTERACTION_SUPPORT]: 0,
+      ...row.reactions,
     },
-    myInteractions: {
+    myReactions: {
       [INTERACTION_LOVE]: false,
       [INTERACTION_FUNNY]: false,
       [INTERACTION_NOT_USEFUL]: false,
       [INTERACTION_SUPPORT]: false,
+      ...row.my_reactions,
     },
     isExample: false,
   };
@@ -77,14 +79,54 @@ export async function query(query: string, values: any[] = []) {
   }
 }
 
-export async function getIdeas(): Promise<Idea[]> {
+export async function getIdeas(userId?: string): Promise<Idea[]> {
   const result = await query(
-    `SELECT i.*, u.handle, u.picture
-    FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
-    ON i.owner_id = u.id 
+    `WITH my_reactions AS (
+    SELECT
+        idea_id,
+        reaction
+    FROM
+        ${schema}.idea_reactions
+    WHERE
+        user_id = $1
+    ),
+    reaction_counts AS (
+    SELECT
+        idea_id,
+        reaction,
+        COUNT(*) AS reaction_count
+    FROM
+        ${schema}.idea_reactions
+    GROUP BY
+        idea_id, reaction
+)
+        SELECT 
+          i.*, 
+          u.handle, 
+          u.picture, 
+          COALESCE(
+        jsonb_object_agg(
+            rc.reaction, 
+            rc.reaction_count
+        ) FILTER (WHERE rc.reaction IS NOT NULL), 
+        '{}'::jsonb) AS reactions,
+         COALESCE(
+        jsonb_object_agg(
+            mrc.reaction, TRUE
+        ) FILTER (WHERE mrc.reaction IS NOT NULL), 
+        '{}'::jsonb) AS my_reactions
+    FROM ${schema}.ideas as i 
+    INNER JOIN ${schema}.users as u 
+      ON i.owner_id = u.id 
+    LEFT JOIN 
+    reaction_counts rc ON i.id = rc.idea_id
+    LEFT JOIN 
+    my_reactions mrc ON i.id = mrc.idea_id
     WHERE i.deleted_at IS NULL
     AND i.flagged = false
-    ORDER BY i.created_at DESC`
+    GROUP BY i.id, u.handle, u.picture
+    ORDER BY i.created_at DESC`,
+    [userId || null]
   );
 
   return result.rows.map(rowToIdea);
@@ -108,7 +150,8 @@ export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
 export async function getIdeaById(id: string): Promise<Idea> {
   const result = await query(
     `SELECT i.*, u.handle, u.picture 
-    FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u
+    FROM ${schema}.ideas as i 
+    INNER JOIN ${schema}.users as u
     ON i.owner_id = u.id
     WHERE i.id = $1`,
     [id]
@@ -206,4 +249,30 @@ export async function getAdminDashboardInfo(): Promise<AdminDashboard> {
     ideasCount: ideasCount.rows[0].count,
     usersCount: usersCount.rows[0].count,
   };
+}
+
+// TODO - Also insert events, so we keep track of the changes
+export async function createIdeaReaction(
+  ideaId: string,
+  userId: string,
+  reaction: string
+): Promise<void> {
+  console.log("Inserting idea reaction", ideaId, reaction, userId);
+  await query(
+    `INSERT INTO ${schema}.idea_reactions (idea_id, user_id, reaction) VALUES ($1, $2, $3)`,
+    [ideaId, userId, reaction]
+  );
+}
+
+// TODO - Also insert events, so we keep track of the changes
+export async function deleteIdeaReaction(
+  ideaId: string,
+  userId: string,
+  reaction: string
+): Promise<void> {
+  console.log("Deleting idea reaction", ideaId, reaction, userId);
+  await query(
+    `DELETE FROM ${schema}.idea_reactions WHERE idea_id=$1 AND user_id=$2 AND reaction=$3`,
+    [ideaId, userId, reaction]
+  );
 }

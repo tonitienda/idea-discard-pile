@@ -21,13 +21,13 @@ const EmptyIdea: Idea = {
   createdAt: "",
   updatedAt: "",
   owner: null,
-  interactions: {
+  reactions: {
     [INTERACTION_LOVE]: 0,
     [INTERACTION_FUNNY]: 0,
     [INTERACTION_NOT_USEFUL]: 0,
     [INTERACTION_SUPPORT]: 0,
   },
-  myInteractions: {
+  myReactions: {
     [INTERACTION_LOVE]: false,
     [INTERACTION_FUNNY]: false,
     [INTERACTION_NOT_USEFUL]: false,
@@ -110,13 +110,13 @@ export async function POST(req: NextRequest) {
       ideaCompletion.spamProbability,
       ideaCompletion.offensiveProbability,
     ].some((v) => v > 0.5),
-    interactions: {
+    reactions: {
       [INTERACTION_LOVE]: 0,
       [INTERACTION_FUNNY]: 0,
       [INTERACTION_NOT_USEFUL]: 0,
       [INTERACTION_SUPPORT]: 0,
     },
-    myInteractions: {
+    myReactions: {
       [INTERACTION_LOVE]: false,
       [INTERACTION_FUNNY]: false,
       [INTERACTION_NOT_USEFUL]: false,

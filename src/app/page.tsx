@@ -4,10 +4,12 @@ import Head from "next/head";
 
 import FeedClientWrapper from "../components/FeedClientWrapper";
 import { getFeed } from "../backend/ideas";
+import { getUser } from "./api/users";
+import { useUser } from "./hooks/use-user";
 
 export default async function Home() {
-  // TODO - Make sure the user is logged in
-  const ideas = await getFeed();
+  const user = await useUser();
+  const ideas = await getFeed(user?.id);
 
   return (
     <div>

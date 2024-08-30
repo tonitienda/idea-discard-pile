@@ -41,30 +41,47 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
       </div>
     );
   }
-  const [interactions, setInteractions] = useState<{
+  const [reactions, setReactions] = useState<{
     [key: string]: { [key: string]: boolean };
   }>({});
 
-  const hasInteractions = (ideaId: string, action: string) => {
-    return interactions[ideaId] && interactions[ideaId][action];
+  const hasDeletedReaction = (ideaId: string, action: string) => {
+    return reactions[ideaId] && reactions[ideaId][action] === false;
+  };
+
+  const hasActiveReaction = (idea: Idea, action: string) => {
+    return (
+      !hasDeletedReaction(idea.id, action) &&
+      ((reactions[idea.id] && reactions[idea.id][action]) ||
+        idea.myReactions[action])
+    );
+  };
+
+  const hasReactions = (ideaId: string, action: string) => {
+    return (
+      reactions[ideaId] &&
+      reactions[ideaId] != undefined &&
+      reactions[ideaId][action]
+    );
+  };
+
+  const hasCancelledReactions = (ideaId: string, action: string) => {
+    return reactions[ideaId] && reactions[ideaId][action] === false;
   };
 
   const getInteractionCount = (idea: Idea, action: string) => {
-    const addition = idea.myInteractions[action]
-      ? hasInteractions(idea.id, action)
-        ? 0
-        : -1
-      : hasInteractions(idea.id, action)
+    const addition = idea.myReactions[action]
+      ? hasCancelledReactions(idea.id, action)
+        ? -1
+        : 0
+      : hasReactions(idea.id, action)
       ? 1
       : 0;
-    return (idea.interactions[action] || 0) + addition;
+    return (idea.reactions[action] || 0) + addition;
   };
 
   const hasLove = (idea: Idea) => {
-    return (
-      idea.myInteractions[INTERACTION_LOVE] ||
-      hasInteractions(idea.id, INTERACTION_LOVE)
-    );
+    return hasActiveReaction(idea, INTERACTION_LOVE);
   };
 
   const getLoveCount = (idea: Idea) => {
@@ -72,10 +89,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
   };
 
   const hasSupport = (idea: Idea) => {
-    return (
-      idea.myInteractions[INTERACTION_SUPPORT] ||
-      hasInteractions(idea.id, INTERACTION_SUPPORT)
-    );
+    return hasActiveReaction(idea, INTERACTION_SUPPORT);
   };
 
   const getSupportCount = (idea: Idea) => {
@@ -83,10 +97,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
   };
 
   const hasNotUseful = (idea: Idea) => {
-    return (
-      idea.myInteractions[INTERACTION_NOT_USEFUL] ||
-      hasInteractions(idea.id, INTERACTION_NOT_USEFUL)
-    );
+    return hasActiveReaction(idea, INTERACTION_NOT_USEFUL);
   };
 
   const getNotUsefulCount = (idea: Idea) => {
@@ -94,43 +105,50 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
   };
 
   const hasFunny = (idea: Idea) => {
-    return (
-      idea.myInteractions[INTERACTION_FUNNY] ||
-      hasInteractions(idea.id, INTERACTION_FUNNY)
-    );
+    return hasActiveReaction(idea, INTERACTION_FUNNY);
   };
 
   const getFunnyCount = (idea: Idea) => {
     return getInteractionCount(idea, INTERACTION_FUNNY);
   };
 
-  const handleAction = (ideaId: string, action: string) => {
-    if (!interactions[ideaId]) {
-      setInteractions((prevInteractions) => ({
-        ...prevInteractions,
-        [ideaId]: { [action]: true },
-      }));
+  const handleAction = async (idea: Idea, action: string) => {
+    if (hasActiveReaction(idea, action)) {
+      setReactions((prevReactions) => {
+        const ideaReactions = prevReactions[idea.id] || {};
+        const newReactions = {
+          ...prevReactions,
+          [idea.id]: {
+            ...ideaReactions,
+            [action]: false,
+          },
+        };
+
+        return newReactions;
+      });
+      await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
+        method: "DELETE",
+      });
+
       return;
     }
 
-    if (interactions[ideaId][action] == undefined) {
-      setInteractions((prevInteractions) => ({
-        ...prevInteractions,
-        [ideaId]: {
-          ...prevInteractions[ideaId],
+    setReactions((prevReactions) => {
+      const ideaReactions = prevReactions[idea.id] || {};
+
+      const newReactions = {
+        ...prevReactions,
+        [idea.id]: {
+          ...ideaReactions,
           [action]: true,
         },
-      }));
-      return;
-    }
+      };
 
-    setInteractions((prevInteractions) => ({
-      ...prevInteractions,
-      [ideaId]: {
-        ...prevInteractions[ideaId],
-        [action]: !interactions[ideaId][action],
-      },
-    }));
+      return newReactions;
+    });
+    await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
+      method: "POST",
+    });
   };
 
   return (
@@ -170,7 +188,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             <div className={`${styles.actions}`}>
               <span>
                 <button
-                  onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
+                  onClick={() => handleAction(idea, INTERACTION_LOVE)}
                   className={`${styles.actionButton} ${styles.love} ${
                     hasLove(idea) ? styles.loveActive : ""
                   }`}
@@ -181,7 +199,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
               <span>
                 <button
-                  onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
+                  onClick={() => handleAction(idea, INTERACTION_SUPPORT)}
                   className={`${styles.actionButton} ${styles.support} ${
                     hasSupport(idea) ? styles.supportActive : ""
                   }`}
@@ -194,7 +212,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
               <span>
                 <button
-                  onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
+                  onClick={() => handleAction(idea, INTERACTION_FUNNY)}
                   className={`${styles.actionButton} ${styles.funny} ${
                     hasFunny(idea) ? styles.funnyActive : ""
                   }`}
@@ -209,7 +227,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
               <span>
                 <button
-                  onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
+                  onClick={() => handleAction(idea, INTERACTION_NOT_USEFUL)}
                   className={`${styles.actionButton} ${styles.useless} ${
                     hasNotUseful(idea) ? styles.uselessActive : ""
                   }`}
