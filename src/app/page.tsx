@@ -3,12 +3,11 @@
 import Head from "next/head";
 
 import FeedClientWrapper from "../components/FeedClientWrapper";
+import { getIdeas } from "../backend/db";
 
 export default async function Home() {
-  const data = await fetch(`${process.env.BASE_URL}/api/feed`);
-
-  const json = await data.json();
-  const ideas = json.items;
+  // TODO - Make sure the user is logged in
+  const ideas = await getIdeas();
 
   return (
     <div>

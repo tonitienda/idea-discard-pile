@@ -1,14 +1,14 @@
 "use server";
 
 import Head from "next/head";
-
 import FeedClientWrapper from "../../components/FeedClientWrapper";
 
-export default async function Home() {
-  const data = await fetch(`${process.env.BASE_URL}/api/feed`);
+import { getIdeasByUserId } from "../../backend/db";
+import { useUser } from "../hooks/use-user";
 
-  const json = await data.json();
-  const ideas = json.items;
+export default async function Home() {
+  const user = await useUser();
+  const ideas = user ? await getIdeasByUserId(user.id) : [];
 
   return (
     <div>

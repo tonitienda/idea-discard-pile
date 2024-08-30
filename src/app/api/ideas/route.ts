@@ -18,7 +18,7 @@ const EmptyIdea: Idea = {
 
 export async function GET(req: NextRequest) {
   try {
-    console.log("GET", req.url);
+    console.error("GET2", req.url);
     const user = await getUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
