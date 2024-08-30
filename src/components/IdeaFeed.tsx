@@ -21,6 +21,20 @@ interface IdeaFeedProps {
 }
 
 export default function IdeaFeed({ ideas }: IdeaFeedProps) {
+  if (!ideas.length) {
+    return (
+      <div className={styles.feed}>
+        <h3>
+          No ideas found
+          <small className="text-body-secondary">
+            {" "}
+            Create your first idea!
+          </small>
+        </h3>
+      </div>
+    );
+  }
+
   const [likedIdeas, setLikedIdeas] = useState<{ [key: string]: boolean }>({});
   const [inspiredIdeas, setInspiredIdeas] = useState<{
     [key: string]: boolean;
@@ -43,15 +57,6 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
       setWorkedIdeas({ ...workedIdeas, [ideaId]: !workedIdeas[ideaId] });
     }
   };
-
-  return (
-    <div className={styles.feed}>
-      <h3>
-        No ideas found
-        <small className="text-body-secondary"> Create your first idea!</small>
-      </h3>
-    </div>
-  );
 
   return (
     <div className={styles.feed}>
