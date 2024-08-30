@@ -5,26 +5,16 @@ import { Idea } from "../app/api/model";
 import styles from "./ideafeed.module.css";
 
 import {
-  BsHandThumbsDownFill,
-  BsHandThumbsUp,
-  BsHandThumbsUpFill,
-  BsLightbulb,
-  BsLightbulbFill,
-  BsRocket,
-  BsRocketFill,
   BsHearts,
   BsHeart,
   BsEmojiLaughing,
   BsEmojiLaughingFill,
   BsPerson,
-  BsPersonRaisedHand,
-  BsEmojiNeutral,
   BsHeartbreak,
   BsHeartbreakFill,
 } from "react-icons/bs";
-import { MdPersonAdd, MdOutlineMoodBad } from "react-icons/md";
+import { MdPersonAdd } from "react-icons/md";
 
-import { BsHandThumbsDown } from "react-icons/bs";
 import DateComponent from "./DateComponent";
 import {
   INTERACTION_FUNNY,
@@ -51,28 +41,41 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
       </div>
     );
   }
+  const [interactions, setInteractions] = useState<{
+    [key: string]: { [key: string]: boolean };
+  }>({});
 
-  const [lovedIdeas, setLovedIdeas] = useState<{ [key: string]: boolean }>({});
-  const [funnyIdeas, setFunnyIdeas] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [uselessIdeas, setUselessIdeas] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [supportIdeas, setSupportIdeas] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const hasInteractions = (ideaId: string, action: string) => {
+    return interactions[ideaId] && interactions[ideaId][action];
+  };
 
   const handleAction = (ideaId: string, action: string) => {
-    if (action === INTERACTION_LOVE) {
-      setLovedIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
-    } else if (action === INTERACTION_FUNNY) {
-      setFunnyIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
-    } else if (action === INTERACTION_NOT_USEFUL) {
-      setUselessIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
-    } else if (action === INTERACTION_SUPPORT) {
-      setSupportIdeas((ideas) => ({ ...ideas, [ideaId]: !ideas[ideaId] }));
+    if (!interactions[ideaId]) {
+      setInteractions((prevInteractions) => ({
+        ...prevInteractions,
+        [ideaId]: { [action]: true },
+      }));
+      return;
     }
+
+    if (interactions[ideaId][action] == undefined) {
+      setInteractions((prevInteractions) => ({
+        ...prevInteractions,
+        [ideaId]: {
+          ...prevInteractions[ideaId],
+          [action]: true,
+        },
+      }));
+      return;
+    }
+
+    setInteractions((prevInteractions) => ({
+      ...prevInteractions,
+      [ideaId]: {
+        ...prevInteractions[ideaId],
+        [action]: !interactions[ideaId][action],
+      },
+    }));
   };
 
   return (
@@ -112,38 +115,58 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             <button
               onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
               className={`${styles.actionButton} ${styles.love} ${
-                lovedIdeas[idea.id] ? styles.loveActive : ""
+                hasInteractions(idea.id, INTERACTION_LOVE)
+                  ? styles.loveActive
+                  : ""
               }`}
             >
-              {lovedIdeas[idea.id] ? <BsHearts /> : <BsHeart />}
+              {hasInteractions(idea.id, INTERACTION_LOVE) ? (
+                <BsHearts />
+              ) : (
+                <BsHeart />
+              )}
             </button>
             <button
               onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
               className={`${styles.actionButton} ${styles.support} ${
-                supportIdeas[idea.id] ? styles.supportActive : ""
+                hasInteractions(idea.id, INTERACTION_SUPPORT)
+                  ? styles.supportActive
+                  : ""
               }`}
             >
-              {supportIdeas[idea.id] ? <MdPersonAdd /> : <BsPerson />}
+              {hasInteractions(idea.id, INTERACTION_SUPPORT) ? (
+                <MdPersonAdd />
+              ) : (
+                <BsPerson />
+              )}
             </button>
             <button
               onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
               className={`${styles.actionButton} ${styles.funny} ${
-                funnyIdeas[idea.id] ? styles.funnyActive : ""
+                hasInteractions(idea.id, INTERACTION_FUNNY)
+                  ? styles.funnyActive
+                  : ""
               }`}
             >
-              {funnyIdeas[idea.id] ? (
+              {hasInteractions(idea.id, INTERACTION_FUNNY) ? (
                 <BsEmojiLaughingFill />
               ) : (
-                <BsEmojiNeutral />
+                <BsEmojiLaughing />
               )}
             </button>
             <button
               onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
               className={`${styles.actionButton} ${styles.useless} ${
-                uselessIdeas[idea.id] ? styles.uselessActive : ""
+                hasInteractions(idea.id, INTERACTION_NOT_USEFUL)
+                  ? styles.uselessActive
+                  : ""
               }`}
             >
-              {uselessIdeas[idea.id] ? <BsHeartbreakFill /> : <BsHeartbreak />}
+              {hasInteractions(idea.id, INTERACTION_NOT_USEFUL) ? (
+                <BsHeartbreakFill />
+              ) : (
+                <BsHeartbreak />
+              )}
             </button>
             <button
               onClick={() => alert("Share clicked!")}
