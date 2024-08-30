@@ -46,6 +46,15 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
 
   return (
     <div className={styles.feed}>
+      <h3>
+        No ideas found
+        <small className="text-body-secondary"> Create your first idea!</small>
+      </h3>
+    </div>
+  );
+
+  return (
+    <div className={styles.feed}>
       {ideas.map((idea) => (
         <div
           key={idea.id}
