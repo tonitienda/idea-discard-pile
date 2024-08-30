@@ -23,6 +23,7 @@ const EmptyIdea: Idea = {
   owner: null,
   interactions: {},
   myInteractions: {},
+  isExample: false,
 };
 
 export async function GET(req: NextRequest) {
@@ -111,6 +112,7 @@ export async function POST(req: NextRequest) {
       [INTERACTION_NOT_USEFUL]: false,
       [INTERACTION_SUPPORT]: false,
     },
+    isExample: false,
   };
 
   const ideaModeration: IdeaModeration = {

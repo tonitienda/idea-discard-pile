@@ -57,7 +57,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
       : hasInteractions(idea.id, action)
       ? 1
       : 0;
-    return idea.interactions[action] + addition;
+    return (idea.interactions[action] || 0) + addition;
   };
 
   const hasLove = (idea: Idea) => {
@@ -166,60 +166,68 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
               </span>
             ))}
           </div>
-          <div className={`${styles.actions}`}>
-            <span>
-              <button
-                onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
-                className={`${styles.actionButton} ${styles.love} ${
-                  hasLove(idea) ? styles.loveActive : ""
-                }`}
-              >
-                {hasLove(idea) ? <BsHearts /> : <BsHeart />}
-              </button>
-              <span>{getLoveCount(idea)}</span>
-            </span>
-            <span>
-              <button
-                onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
-                className={`${styles.actionButton} ${styles.support} ${
-                  hasSupport(idea) ? styles.supportActive : ""
-                }`}
-              >
-                {hasSupport(idea) ? <MdPersonAdd /> : <BsPerson />}
-              </button>
-              <span style={{ display: "inline" }}>{getSupportCount(idea)}</span>
-            </span>
-            <span>
-              <button
-                onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
-                className={`${styles.actionButton} ${styles.funny} ${
-                  hasFunny(idea) ? styles.funnyActive : ""
-                }`}
-              >
-                {hasFunny(idea) ? <BsEmojiLaughingFill /> : <BsEmojiLaughing />}
-              </button>
-              <span style={{ display: "inline" }}>{getFunnyCount(idea)}</span>
-            </span>
-            <span>
-              <button
-                onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
-                className={`${styles.actionButton} ${styles.useless} ${
-                  hasNotUseful(idea) ? styles.uselessActive : ""
-                }`}
-              >
-                {hasNotUseful(idea) ? <BsHeartbreakFill /> : <BsHeartbreak />}
-              </button>
-              <span style={{ display: "inline" }}>
-                {getNotUsefulCount(idea)}
+          {!idea.isExample && (
+            <div className={`${styles.actions}`}>
+              <span>
+                <button
+                  onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
+                  className={`${styles.actionButton} ${styles.love} ${
+                    hasLove(idea) ? styles.loveActive : ""
+                  }`}
+                >
+                  {hasLove(idea) ? <BsHearts /> : <BsHeart />}
+                </button>
+                <span>{getLoveCount(idea)}</span>
               </span>
-            </span>
-            {/* <button
+              <span>
+                <button
+                  onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
+                  className={`${styles.actionButton} ${styles.support} ${
+                    hasSupport(idea) ? styles.supportActive : ""
+                  }`}
+                >
+                  {hasSupport(idea) ? <MdPersonAdd /> : <BsPerson />}
+                </button>
+                <span style={{ display: "inline" }}>
+                  {getSupportCount(idea)}
+                </span>
+              </span>
+              <span>
+                <button
+                  onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
+                  className={`${styles.actionButton} ${styles.funny} ${
+                    hasFunny(idea) ? styles.funnyActive : ""
+                  }`}
+                >
+                  {hasFunny(idea) ? (
+                    <BsEmojiLaughingFill />
+                  ) : (
+                    <BsEmojiLaughing />
+                  )}
+                </button>
+                <span style={{ display: "inline" }}>{getFunnyCount(idea)}</span>
+              </span>
+              <span>
+                <button
+                  onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
+                  className={`${styles.actionButton} ${styles.useless} ${
+                    hasNotUseful(idea) ? styles.uselessActive : ""
+                  }`}
+                >
+                  {hasNotUseful(idea) ? <BsHeartbreakFill /> : <BsHeartbreak />}
+                </button>
+                <span style={{ display: "inline" }}>
+                  {getNotUsefulCount(idea)}
+                </span>
+              </span>
+              {/* <button
               onClick={() => alert("Share clicked!")}
               className={styles.actionButton}
             >
               🔗 Share
             </button> */}
-          </div>
+            </div>
+          )}
         </div>
       ))}
     </div>

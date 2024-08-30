@@ -33,6 +33,7 @@ export type Idea = {
   isFlagged?: boolean;
   interactions: { [key: string]: number };
   myInteractions: { [key: string]: boolean };
+  isExample: boolean;
 };
 
 export type IdeaModeration = {

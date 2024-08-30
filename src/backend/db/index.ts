@@ -39,6 +39,7 @@ const rowToIdea = (row: any): Idea => {
       [INTERACTION_NOT_USEFUL]: false,
       [INTERACTION_SUPPORT]: false,
     },
+    isExample: false,
   };
 };
 

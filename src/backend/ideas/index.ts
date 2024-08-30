@@ -14,6 +14,7 @@ const EmptyIdea: Idea = {
   owner: null,
   interactions: {},
   myInteractions: {},
+  isExample: false,
 };
 
 const exampleIdeas = [
@@ -154,7 +155,7 @@ const exampleIdeas = [
 export async function getFeed(): Promise<Idea[]> {
   const items: Idea[] = await getIdeas();
 
-  const ideas = [];
+  const ideas: Idea[] = [];
   // TODO - Add example ideas directly to the DB (or via an admin interface) so they have
   // an ID and can be interacted with
   if (items.length < 20) {
@@ -174,6 +175,7 @@ export async function getFeed(): Promise<Idea[]> {
             handle: "@ideabot",
             picture: "/images/ideabot_avatar.webp",
           },
+          isExample: true,
         });
       }
       if (i < items.length) {
