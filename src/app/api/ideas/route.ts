@@ -21,8 +21,18 @@ const EmptyIdea: Idea = {
   createdAt: "",
   updatedAt: "",
   owner: null,
-  interactions: {},
-  myInteractions: {},
+  interactions: {
+    [INTERACTION_LOVE]: 0,
+    [INTERACTION_FUNNY]: 0,
+    [INTERACTION_NOT_USEFUL]: 0,
+    [INTERACTION_SUPPORT]: 0,
+  },
+  myInteractions: {
+    [INTERACTION_LOVE]: false,
+    [INTERACTION_FUNNY]: false,
+    [INTERACTION_NOT_USEFUL]: false,
+    [INTERACTION_SUPPORT]: false,
+  },
   isExample: false,
 };
 

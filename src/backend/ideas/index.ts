@@ -1,6 +1,12 @@
 import { v4 as uuid } from "uuid";
 
-import { Idea } from "../../app/api/model";
+import {
+  Idea,
+  INTERACTION_FUNNY,
+  INTERACTION_LOVE,
+  INTERACTION_NOT_USEFUL,
+  INTERACTION_SUPPORT,
+} from "../../app/api/model";
 import { getIdeas } from "../db";
 
 const EmptyIdea: Idea = {
@@ -12,8 +18,18 @@ const EmptyIdea: Idea = {
   createdAt: "",
   updatedAt: "",
   owner: null,
-  interactions: {},
-  myInteractions: {},
+  interactions: {
+    [INTERACTION_LOVE]: 0,
+    [INTERACTION_FUNNY]: 0,
+    [INTERACTION_NOT_USEFUL]: 0,
+    [INTERACTION_SUPPORT]: 0,
+  },
+  myInteractions: {
+    [INTERACTION_LOVE]: false,
+    [INTERACTION_FUNNY]: false,
+    [INTERACTION_NOT_USEFUL]: false,
+    [INTERACTION_SUPPORT]: false,
+  },
   isExample: false,
 };
 
