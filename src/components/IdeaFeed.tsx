@@ -123,7 +123,7 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
                 supportIdeas[idea.id] ? styles.supportActive : ""
               }`}
             >
-              {supportIdeas[idea.id] ? <BsPerson /> : <MdPersonAdd />}
+              {supportIdeas[idea.id] ? <MdPersonAdd /> : <BsPerson />}
             </button>
             <button
               onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
