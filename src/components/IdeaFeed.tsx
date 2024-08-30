@@ -49,6 +49,61 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
     return interactions[ideaId] && interactions[ideaId][action];
   };
 
+  const getInteractionCount = (idea: Idea, action: string) => {
+    const addition = idea.myInteractions[action]
+      ? hasInteractions(idea.id, action)
+        ? 0
+        : -1
+      : hasInteractions(idea.id, action)
+      ? 1
+      : 0;
+    return idea.interactions[action] + addition;
+  };
+
+  const hasLove = (idea: Idea) => {
+    return (
+      idea.myInteractions[INTERACTION_LOVE] ||
+      hasInteractions(idea.id, INTERACTION_LOVE)
+    );
+  };
+
+  const getLoveCount = (idea: Idea) => {
+    return getInteractionCount(idea, INTERACTION_LOVE);
+  };
+
+  const hasSupport = (idea: Idea) => {
+    return (
+      idea.myInteractions[INTERACTION_SUPPORT] ||
+      hasInteractions(idea.id, INTERACTION_SUPPORT)
+    );
+  };
+
+  const getSupportCount = (idea: Idea) => {
+    return getInteractionCount(idea, INTERACTION_SUPPORT);
+  };
+
+  const hasNotUseful = (idea: Idea) => {
+    return (
+      idea.myInteractions[INTERACTION_NOT_USEFUL] ||
+      hasInteractions(idea.id, INTERACTION_NOT_USEFUL)
+    );
+  };
+
+  const getNotUsefulCount = (idea: Idea) => {
+    return getInteractionCount(idea, INTERACTION_NOT_USEFUL);
+  };
+
+  const hasFunny = (idea: Idea) => {
+    return (
+      idea.myInteractions[INTERACTION_FUNNY] ||
+      hasInteractions(idea.id, INTERACTION_FUNNY)
+    );
+  };
+
+  const getFunnyCount = (idea: Idea) => {
+    return getInteractionCount(idea, INTERACTION_FUNNY);
+  };
+
   const handleAction = (ideaId: string, action: string) => {
     if (!interactions[ideaId]) {
       setInteractions((prevInteractions) => ({
@@ -112,68 +167,58 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
             ))}
           </div>
           <div className={`${styles.actions}`}>
-            <button
-              onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
-              className={`${styles.actionButton} ${styles.love} ${
-                hasInteractions(idea.id, INTERACTION_LOVE)
-                  ? styles.loveActive
-                  : ""
-              }`}
-            >
-              {hasInteractions(idea.id, INTERACTION_LOVE) ? (
-                <BsHearts />
-              ) : (
-                <BsHeart />
-              )}
-            </button>
-            <button
-              onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
-              className={`${styles.actionButton} ${styles.support} ${
-                hasInteractions(idea.id, INTERACTION_SUPPORT)
-                  ? styles.supportActive
-                  : ""
-              }`}
-            >
-              {hasInteractions(idea.id, INTERACTION_SUPPORT) ? (
-                <MdPersonAdd />
-              ) : (
-                <BsPerson />
-              )}
-            </button>
-            <button
-              onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
-              className={`${styles.actionButton} ${styles.funny} ${
-                hasInteractions(idea.id, INTERACTION_FUNNY)
-                  ? styles.funnyActive
-                  : ""
-              }`}
-            >
-              {hasInteractions(idea.id, INTERACTION_FUNNY) ? (
-                <BsEmojiLaughingFill />
-              ) : (
-                <BsEmojiLaughing />
-              )}
-            </button>
-            <button
-              onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
-              className={`${styles.actionButton} ${styles.useless} ${
-                hasInteractions(idea.id, INTERACTION_NOT_USEFUL)
-                  ? styles.uselessActive
-                  : ""
-              }`}
-            >
-              {hasInteractions(idea.id, INTERACTION_NOT_USEFUL) ? (
-                <BsHeartbreakFill />
-              ) : (
-                <BsHeartbreak />
-              )}
-            </button>
-            <button
+            <span>
+              <button
+                onClick={() => handleAction(idea.id, INTERACTION_LOVE)}
+                className={`${styles.actionButton} ${styles.love} ${
+                  hasLove(idea) ? styles.loveActive : ""
+                }`}
+              >
+                {hasLove(idea) ? <BsHearts /> : <BsHeart />}
+              </button>
+              <span>{getLoveCount(idea)}</span>
+            </span>
+            <span>
+              <button
+                onClick={() => handleAction(idea.id, INTERACTION_SUPPORT)}
+                className={`${styles.actionButton} ${styles.support} ${
+                  hasSupport(idea) ? styles.supportActive : ""
+                }`}
+              >
+                {hasSupport(idea) ? <MdPersonAdd /> : <BsPerson />}
+              </button>
+              <span style={{ display: "inline" }}>{getSupportCount(idea)}</span>
+            </span>
+            <span>
+              <button
+                onClick={() => handleAction(idea.id, INTERACTION_FUNNY)}
+                className={`${styles.actionButton} ${styles.funny} ${
+                  hasFunny(idea) ? styles.funnyActive : ""
+                }`}
+              >
+                {hasFunny(idea) ? <BsEmojiLaughingFill /> : <BsEmojiLaughing />}
+              </button>
+              <span style={{ display: "inline" }}>{getFunnyCount(idea)}</span>
+            </span>
+            <span>
+              <button
+                onClick={() => handleAction(idea.id, INTERACTION_NOT_USEFUL)}
+                className={`${styles.actionButton} ${styles.useless} ${
+                  hasNotUseful(idea) ? styles.uselessActive : ""
+                }`}
+              >
+                {hasNotUseful(idea) ? <BsHeartbreakFill /> : <BsHeartbreak />}
+              </button>
+              <span style={{ display: "inline" }}>
+                {getNotUsefulCount(idea)}
+              </span>
+            </span>
+            {/* <button
               onClick={() => alert("Share clicked!")}
               className={styles.actionButton}
             >
               🔗 Share
-            </button>
+            </button> */}
           </div>
         </div>
       ))}
