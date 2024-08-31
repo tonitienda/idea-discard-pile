@@ -14,7 +14,7 @@ export const POST = async (req: NextRequest, { params }) => {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  console.log("USER: ", user);
+  console.log("Params: ", params);
 
   const { id: ideaId, action } = params;
 
