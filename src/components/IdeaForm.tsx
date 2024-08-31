@@ -3,6 +3,7 @@
 // components/IdeaForm.tsx
 import { useState } from "react";
 import { Idea } from "../app/api/model";
+import { trackIdeaCreation } from "../client/ga";
 
 interface IdeaFormProps {
   onIdeaAdded: (idea: Idea) => void;
@@ -26,6 +27,7 @@ export default function IdeaForm(props: IdeaFormProps) {
       .then((response) => (response.ok ? response.json() : null))
       .then((idea) => {
         if (idea) {
+          trackIdeaCreation(idea.id, idea.title);
           props.onIdeaAdded(idea);
         }
       });

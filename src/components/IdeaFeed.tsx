@@ -22,6 +22,7 @@ import {
   INTERACTION_NOT_USEFUL,
   INTERACTION_SUPPORT,
 } from "../app/api/model";
+import { trackIdeaReaction } from "../client/ga";
 
 interface IdeaFeedProps {
   ideas: Idea[];
@@ -126,6 +127,8 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
 
         return newReactions;
       });
+      trackIdeaReaction(idea.id, action, "disabled");
+
       await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
         method: "DELETE",
       });
@@ -146,6 +149,8 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
 
       return newReactions;
     });
+    trackIdeaReaction(idea.id, action, "enabled");
+
     await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
       method: "POST",
     });
