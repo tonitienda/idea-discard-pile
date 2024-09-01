@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../users";
+import { getUser } from "../../../backend/users";
 import { getFeed } from "../../../backend/ideas";
 
 export async function GET(req: NextRequest) {

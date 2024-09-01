@@ -4,7 +4,7 @@ import Head from "next/head";
 
 import FeedClientWrapper from "../components/FeedClientWrapper";
 import { getFeed } from "../backend/ideas";
-import { getUser } from "./api/users";
+import { getUser } from "../backend/users";
 import { useUser } from "./hooks/use-user";
 
 export default async function Home() {

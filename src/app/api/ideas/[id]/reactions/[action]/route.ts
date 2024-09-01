@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../../../../users";
+import { getUser } from "../../../../../../backend/users";
 import {
   createIdeaReaction,
   deleteIdeaReaction,

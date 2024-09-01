@@ -8,7 +8,7 @@ import {
   INTERACTION_SUPPORT,
 } from "../model";
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../users";
+import { getUser } from "../../../backend/users";
 import { createIdea, getIdeas, getIdeasByUserId } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 

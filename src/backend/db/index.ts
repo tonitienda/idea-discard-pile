@@ -276,3 +276,13 @@ export async function deleteIdeaReaction(
     [ideaId, userId, reaction]
   );
 }
+
+export function updateUserProfile(
+  id: string,
+  { handle, picture }: { handle: string; picture: string }
+): Promise<User> {
+  return query(
+    `UPDATE ${schema}.users SET handle = $1, picture = $2 WHERE id = $3 RETURNING *`,
+    [handle, picture, id]
+  );
+}

@@ -1,7 +1,7 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "./model";
-import { getUserBySub } from "../../backend/db";
+import { User } from "../app/api/model";
+import { getUserBySub } from "./db";
 
 export const getUser = async (req: NextRequest): Promise<User | null> => {
   const res = new NextResponse();

@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { AdminDashboard, Idea } from "../../model";
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../../users";
+import { getUser } from "../../../../backend/users";
 import { getAdminDashboardInfo } from "../../../../backend/db";
 
 export async function GET(req: NextRequest) {
