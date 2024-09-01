@@ -44,6 +44,11 @@ export default async function RootLayout({
           rel="stylesheet"
           href={`https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/${template}/bootstrap.min.css`}
         />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1105071770248849"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <UserProvider>
         <body>
