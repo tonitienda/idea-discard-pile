@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <div>
       <Head>
-        <title>A Pile of Ideas</title>
+        <title>Aidia Hub - Feed</title>
         <meta
           name="description"
           content="Share and discover innovative ideas"

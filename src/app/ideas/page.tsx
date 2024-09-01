@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <div>
       <Head>
-        <title>A Pile of Ideas</title>
+        <title>Aidia Hub - My ideas</title>
         <meta
           name="description"
           content="Share and discover innovative ideas"

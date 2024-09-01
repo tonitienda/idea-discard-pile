@@ -3,7 +3,7 @@ export default function NavBar() {
     <nav className="navbar navbar-expand-lg bg-light" data-bs-theme="light">
       <div className="container-fluid">
         <a className="navbar-brand" href="/">
-          A Pile of Ideas
+          Aidia Hub
         </a>
       </div>
       <ul className="navbar-nav">

@@ -8,7 +8,7 @@ import LandingNavBar from "../components/Landing/NavBar";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
-  title: "Idea DISCARD PILE",
+  title: "Aidia Hub - Where ideas connect",
   description: "Discarded ideas that could be usefule to you!",
 };
 
