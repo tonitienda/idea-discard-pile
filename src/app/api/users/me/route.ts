@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const data = await req.json();
-  const { handle, picture } = data;
+  const { handle, picture, name } = data;
 
   const isValidImageUrl = await checkIfImageUrl(picture);
   if (!isValidImageUrl) {
@@ -64,7 +64,11 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Invalid handle" }, { status: 400 });
   }
 
-  await updateUserProfile(user.id, { handle, picture });
+  if (!name) {
+    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+  }
+
+  await updateUserProfile(user.id, { handle, picture, name });
 
   return NextResponse.json(user, { status: 200 });
 }

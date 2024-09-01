@@ -14,6 +14,7 @@ export function ProfileForm({ user }: { user: User }) {
     e.preventDefault();
     // Save the profile. Get fields value by input name
     const handle = (e.target as any).handle.value;
+    const name = (e.target as any).name.value;
     const picture = pictureUrl;
 
     // Save the profile
@@ -22,7 +23,7 @@ export function ProfileForm({ user }: { user: User }) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ handle, picture }),
+      body: JSON.stringify({ handle, picture, name }),
     });
 
     if (response.ok) {
@@ -42,7 +43,7 @@ export function ProfileForm({ user }: { user: User }) {
           {errorMessage}
         </div>
       )}
-      {setSuccessMessage && (
+      {successMessage && (
         <div className="alert alert-dismissible alert-success">
           {successMessage}
         </div>
@@ -64,6 +65,23 @@ export function ProfileForm({ user }: { user: User }) {
                 value={user.email}
               />
             </div>
+          </div>
+          <div>
+            <label htmlFor="name" className="form-label mt-4">
+              Name
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              aria-describedby="nameHelp"
+              placeholder="Enter name"
+              name="name"
+              defaultValue={user.name}
+            />
+            <small id="nameHelp" className="form-text text-muted">
+              Your name
+            </small>
           </div>
           <div>
             <label htmlFor="handle" className="form-label mt-4">

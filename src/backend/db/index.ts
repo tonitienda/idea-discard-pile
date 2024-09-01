@@ -279,10 +279,10 @@ export async function deleteIdeaReaction(
 
 export function updateUserProfile(
   id: string,
-  { handle, picture }: { handle: string; picture: string }
+  { name, handle, picture }: { name: string; handle: string; picture: string }
 ): Promise<User> {
   return query(
-    `UPDATE ${schema}.users SET handle = $1, picture = $2 WHERE id = $3 RETURNING *`,
-    [handle, picture, id]
+    `UPDATE ${schema}.users SET name=$1, handle = $2, picture = $3 WHERE id = $4 RETURNING *`,
+    [name, handle, picture, id]
   );
 }
