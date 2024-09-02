@@ -12,7 +12,7 @@ export default async function Home() {
   const ideas = await getFeed(user?.id);
 
   return (
-    <div>
+    <>
       <Head>
         <title>Aidia Hub - Feed</title>
         <meta
@@ -21,13 +21,11 @@ export default async function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="main">
-        <FeedClientWrapper
-          initialFeed={ideas}
-          enableInteractions={!!user}
-          user={user}
-        />
-      </main>
-    </div>
+      <FeedClientWrapper
+        initialFeed={ideas}
+        enableInteractions={!!user}
+        user={user}
+      />
+    </>
   );
 }
