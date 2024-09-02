@@ -5,9 +5,7 @@ import styles from "./ideafeed.module.css";
 
 import { IdeaCard } from "./IdeaCard";
 import PromptToLoginModal from "./PromptToLoginModal";
-import { set } from "date-fns";
 import { useState } from "react";
-// import { AdCard } from "./AdCard";
 
 interface IdeaFeedProps {
   ideas: Idea[];
@@ -28,26 +26,23 @@ export default function IdeaFeed({ ideas, enableInteractions }: IdeaFeedProps) {
     );
   }
 
-  console.log(`Ideafeed promptToLoginModalOpen`, promptToLoginModalOpen);
   return (
     <>
       <PromptToLoginModal open={promptToLoginModalOpen} />
       <div className={styles.feed}>
         {ideas.map((idea, idx) => (
-          <>
-            <IdeaCard
-              idea={idea}
-              key={idea.id || idx}
-              enableInteractions={enableInteractions}
-              onInteractionAttempted={(ideaId, action) => {
-                console.log("onInteractionAttempted", ideaId, action);
-                if (!enableInteractions) {
-                  console.log("Prompt to login set to true");
-                  setPromptToLoginModalOpen(true);
-                }
-              }}
-            />
-          </>
+          <IdeaCard
+            idea={idea}
+            key={idea.id || idx}
+            enableInteractions={enableInteractions}
+            onInteractionAttempted={(ideaId, action) => {
+              console.log("onInteractionAttempted", ideaId, action);
+              if (!enableInteractions) {
+                console.log("Prompt to login set to true");
+                setPromptToLoginModalOpen(true);
+              }
+            }}
+          />
         ))}
       </div>
     </>

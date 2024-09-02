@@ -23,7 +23,11 @@ export default async function Home() {
 
       <main className="main">
         <div className="row">
-          <FeedClientWrapper initialFeed={ideas} enableInteractions={!!user} />
+          <FeedClientWrapper
+            initialFeed={ideas}
+            enableInteractions={!!user}
+            user={user}
+          />
         </div>
       </main>
     </div>

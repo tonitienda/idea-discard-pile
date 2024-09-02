@@ -4,11 +4,13 @@
 import { useState } from "react";
 import IdeaFeed from "./IdeaFeed";
 import IdeaForm from "./IdeaForm";
-import { Idea } from "../app/api/model";
+import { Idea, User } from "../app/api/model";
+import { format } from "date-fns";
 
 type FeedClientWrapperProps = {
   initialFeed: Idea[];
   enableInteractions: boolean;
+  user: User;
 };
 
 export default function FeedClientWrapper(props: FeedClientWrapperProps) {
@@ -17,7 +19,7 @@ export default function FeedClientWrapper(props: FeedClientWrapperProps) {
 
   // Callback to add a new idea to the feed
   const addIdea = (newIdea) => {
-    setIdeas((prevIdeas) => [...prevIdeas, newIdea]);
+    setIdeas((prevIdeas) => [newIdea, ...prevIdeas]);
   };
 
   return (
