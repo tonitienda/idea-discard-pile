@@ -26,9 +26,10 @@ import { trackIdeaReaction } from "../client/ga";
 
 type IdeaCardProps = {
   idea: Idea;
+  enableInteractions: boolean;
 };
 
-export function IdeaCard({ idea }: IdeaCardProps) {
+export function IdeaCard({ idea, enableInteractions }: IdeaCardProps) {
   const [reactions, setReactions] = useState<{
     [key: string]: { [key: string]: boolean };
   }>({});
@@ -101,6 +102,9 @@ export function IdeaCard({ idea }: IdeaCardProps) {
   };
 
   const handleAction = async (idea: Idea, action: string) => {
+    if (!enableInteractions) {
+      return;
+    }
     if (hasActiveReaction(idea, action)) {
       setReactions((prevReactions) => {
         const ideaReactions = prevReactions[idea.id] || {};

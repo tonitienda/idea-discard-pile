@@ -4,8 +4,15 @@
 import { useState } from "react";
 import IdeaFeed from "./IdeaFeed";
 import IdeaForm from "./IdeaForm";
+import { Idea } from "../app/api/model";
 
-export default function FeedClientWrapper({ initialFeed }) {
+type FeedClientWrapperProps = {
+  initialFeed: Idea[];
+  enableInteractions: boolean;
+};
+
+export default function FeedClientWrapper(props: FeedClientWrapperProps) {
+  const { initialFeed, enableInteractions } = props;
   const [ideas, setIdeas] = useState(initialFeed);
 
   // Callback to add a new idea to the feed
@@ -15,11 +22,13 @@ export default function FeedClientWrapper({ initialFeed }) {
 
   return (
     <>
+      {enableInteractions && (
+        <div className="col-lg-12">
+          <IdeaForm onIdeaAdded={addIdea} />
+        </div>
+      )}
       <div className="col-lg-12">
-        <IdeaForm onIdeaAdded={addIdea} />
-      </div>
-      <div className="col-lg-12">
-        <IdeaFeed ideas={ideas} />
+        <IdeaFeed ideas={ideas} enableInteractions={enableInteractions} />
       </div>
     </>
   );

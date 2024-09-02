@@ -62,7 +62,10 @@ export default async function RootLayout({
             </div>
           ) : (
             <div className="container" style={{ paddingTop: 60 }}>
-              <Landing />
+              <div className="row">
+                <Landing />
+              </div>
+              <div className="row">{children}</div>
             </div>
           )}
           <Analytics />

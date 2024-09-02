@@ -8,9 +8,10 @@ import { IdeaCard } from "./IdeaCard";
 
 interface IdeaFeedProps {
   ideas: Idea[];
+  enableInteractions: boolean;
 }
 
-export default function IdeaFeed({ ideas }: IdeaFeedProps) {
+export default function IdeaFeed({ ideas, enableInteractions }: IdeaFeedProps) {
   if (!ideas.length) {
     return (
       <div className={styles.feed}>
@@ -29,7 +30,11 @@ export default function IdeaFeed({ ideas }: IdeaFeedProps) {
     <div className={styles.feed}>
       {ideas.map((idea, idx) => (
         <>
-          <IdeaCard idea={idea} key={idea.id} />
+          <IdeaCard
+            idea={idea}
+            key={idea.id}
+            enableInteractions={enableInteractions}
+          />
           {/* {(idx + 1) % 5 === 0 && <AdCard />} */}
         </>
       ))}

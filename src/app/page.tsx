@@ -21,11 +21,8 @@ export default async function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className="main">
-        <div className="row">
-          <FeedClientWrapper initialFeed={ideas} />
-        </div>
+        <FeedClientWrapper initialFeed={ideas} enableInteractions={!!user} />
       </main>
     </div>
   );
