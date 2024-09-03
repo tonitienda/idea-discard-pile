@@ -20,3 +20,10 @@ export function trackUserLogin(userId) {
     user_id: userId,
   });
 }
+
+export function trackSubscriptionIntent(plan: string) {
+  window.gtag("event", "subscription_intent", {
+    event_category: "Subscription",
+    event_label: plan,
+  });
+}

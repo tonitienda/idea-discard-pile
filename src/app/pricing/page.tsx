@@ -1,6 +1,22 @@
-import React from "react";
+"use client";
 
-export default function PricingPage() {
+import { StoreProvider } from "easy-peasy";
+import React from "react";
+import { store, useStoreActions } from "../../store";
+import { trackSubscriptionIntent } from "../../client/ga";
+
+function PricingPage() {
+  const addNotification = useStoreActions((actions) => actions.addNotification);
+
+  const subscribeClick = (plan: string) => {
+    addNotification({
+      level: "info",
+      message: `Premuim features are coming soon!`,
+    });
+
+    trackSubscriptionIntent(plan);
+  };
+
   return (
     <div className="container">
       {/* Support the Platform Section */}
@@ -72,6 +88,7 @@ export default function PricingPage() {
               <button
                 type="button"
                 className="btn btn-lg btn-block btn-primary mt-auto"
+                onClick={() => subscribeClick("premium")}
               >
                 Subscribe
               </button>
@@ -97,6 +114,7 @@ export default function PricingPage() {
               <button
                 type="button"
                 className="btn btn-lg btn-block btn-primary mt-auto"
+                onClick={() => subscribeClick("premium+")}
               >
                 Subscribe
               </button>
@@ -105,5 +123,13 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PricingPageWithStore() {
+  return (
+    <StoreProvider store={store}>
+      <PricingPage />
+    </StoreProvider>
   );
 }
