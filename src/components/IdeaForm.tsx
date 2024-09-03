@@ -9,6 +9,47 @@ interface IdeaFormProps {
   onIdeaAdded: (idea: Idea) => void;
 }
 
+const postIdea = async (
+  description: string
+): Promise<[string | null, Error | null]> => {
+  const partialIdea: Partial<Idea> = { description };
+
+  const response = await fetch(`/api/ideas`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(partialIdea),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    return [data.id, null];
+  }
+
+  try {
+    const data = await response.json();
+
+    return [null, new Error(data.message)];
+  } catch (error) {
+    return [null, new Error("Failed to post idea")];
+  }
+};
+
+const getIdea = async (id: string): Promise<[Idea | null, Error | null]> => {
+  const response = await fetch(`/api/ideas/${id}`);
+
+  if (response.ok) {
+    const idea: Idea = await response.json();
+    if (idea.isFlagged) {
+      return [idea, new Error("Idea is flagged")];
+    }
+    return [idea as Idea, null];
+  }
+
+  return [null, new Error("Failed to fetch idea")];
+};
+
 export default function IdeaForm(props: IdeaFormProps) {
   const [description, setDescription] = useState("");
   const [onFocus, setOnFocus] = useState(false);
@@ -17,54 +58,42 @@ export default function IdeaForm(props: IdeaFormProps) {
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
+  const [submissionError, setSubmissionError] = useState<Error | null>(null);
 
   const addIdea = async (description: string): Promise<void> => {
     setSubmissionSuccess(null);
     setSubmissionPercent(5);
     setSubmittingIdea(true);
-    const partialIdea: Partial<Idea> = { description };
 
-    return fetch(`/api/ideas`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(partialIdea),
-    })
-      .then((response) => {
-        setSubmissionPercent(50);
-        return response.json();
-      })
-      .then((data) => {
-        setSubmissionPercent(60);
-        return fetch(`/api/ideas/${data.id}`);
-      })
-      .then((response) => {
-        if (response.ok) {
-          setSubmissionPercent(70);
-          return response.json();
-        }
+    const [ideaId, postError] = await postIdea(description);
 
-        setSubmissionSuccess(false);
-        setSubmittingIdea(false);
+    if (postError) {
+      setSubmissionSuccess(false);
+      setSubmittingIdea(false);
+      setSubmissionError(postError);
+      return;
+    }
 
-        return null;
-      })
+    setSubmissionPercent(60);
 
-      .then((idea) => {
-        setSubmissionSuccess(true);
-        setSubmissionPercent(100);
+    const [idea, getError] = await getIdea(ideaId);
 
-        if (idea) {
-          trackIdeaCreation(idea.id, idea.title);
-          props.onIdeaAdded(idea);
-        } else {
-          props.onIdeaAdded(null);
-        }
-        setTimeout(() => {
-          setSubmittingIdea(false);
-        }, 200);
-      });
+    if (getError) {
+      setSubmissionSuccess(false);
+    }
+
+    setSubmissionPercent(100);
+
+    if (idea) {
+      trackIdeaCreation(idea.id, idea.title);
+      props.onIdeaAdded(idea);
+    } else {
+      props.onIdeaAdded(null);
+    }
+
+    setTimeout(() => {
+      setSubmittingIdea(false);
+    }, 200);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +108,16 @@ export default function IdeaForm(props: IdeaFormProps) {
 
   return (
     <>
+      {submissionError && (
+        <div className="alert alert-dismissible alert-danger">
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
+          {submissionError.message}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="d-flex w-100">
         <textarea
           value={description}

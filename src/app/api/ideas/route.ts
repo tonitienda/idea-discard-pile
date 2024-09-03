@@ -11,6 +11,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../backend/users";
 import { createIdea, getIdeas, getIdeasByUserId } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
+import {
+  IDEA_DESCRIPTION_MAX_LENGTH,
+  IDEA_DESCRIPTION_MIN_LENGTH,
+} from "../../invariants";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -68,9 +72,15 @@ export async function POST(req: NextRequest) {
 
   console.log("Description:", description);
 
-  if (!description || description.length < 10) {
+  if (
+    !description ||
+    description.length < IDEA_DESCRIPTION_MIN_LENGTH ||
+    description.length > IDEA_DESCRIPTION_MAX_LENGTH
+  ) {
     return NextResponse.json(
-      { message: "Description must be at least 10 characters" },
+      {
+        message: `Description must be between ${IDEA_DESCRIPTION_MIN_LENGTH} and ${IDEA_DESCRIPTION_MAX_LENGTH} characters`,
+      },
       { status: 400 }
     );
   }
