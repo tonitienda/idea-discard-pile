@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Idea } from "../app/api/model";
 import { trackIdeaCreation } from "../client/ga";
 
+import { BsX } from "react-icons/bs";
 interface IdeaFormProps {
   onIdeaAdded: (idea: Idea) => void;
 }
@@ -42,7 +43,12 @@ const getIdea = async (id: string): Promise<[Idea | null, Error | null]> => {
   if (response.ok) {
     const idea: Idea = await response.json();
     if (idea.isFlagged) {
-      return [idea, new Error("Idea is flagged")];
+      return [
+        idea,
+        new Error(
+          "Your idea was flagged. Please make sure it is not spam or inappropriate.<br /> You can always find it under <a href='/ideas'>My Ideas</a> "
+        ),
+      ];
     }
     return [idea as Idea, null];
   }
@@ -80,6 +86,7 @@ export default function IdeaForm(props: IdeaFormProps) {
 
     if (getError) {
       setSubmissionSuccess(false);
+      setSubmissionError(getError);
     }
 
     setSubmissionPercent(100);
@@ -109,13 +116,23 @@ export default function IdeaForm(props: IdeaFormProps) {
   return (
     <>
       {submissionError && (
-        <div className="alert alert-dismissible alert-danger">
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="alert"
-          ></button>
-          {submissionError.message}
+        <div
+          className="alert alert-dismissible alert-danger"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            paddingRight: 6,
+            borderRadius: 6,
+          }}
+        >
+          <span
+            dangerouslySetInnerHTML={{ __html: submissionError.message }}
+          ></span>
+
+          <BsX
+            style={{ width: 25, height: 25, cursor: "pointer" }}
+            onClick={() => setSubmissionError(null)}
+          />
         </div>
       )}
       <form onSubmit={handleSubmit} className="d-flex w-100">

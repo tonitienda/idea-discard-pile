@@ -19,7 +19,9 @@ export default function FeedClientWrapper(props: FeedClientWrapperProps) {
 
   // Callback to add a new idea to the feed
   const addIdea = (newIdea) => {
-    setIdeas((prevIdeas) => [newIdea, ...prevIdeas]);
+    if (newIdea) {
+      setIdeas((prevIdeas) => [newIdea, ...prevIdeas]);
+    }
   };
 
   return (
