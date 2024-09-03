@@ -286,3 +286,13 @@ export function updateUserProfile(
     [name, handle, picture, id]
   );
 }
+
+export function getIdeasByUserIdSince(
+  userId: string,
+  since: Date
+): Promise<Idea[]> {
+  return query(
+    `SELECT * FROM ${schema}.ideas WHERE owner_id = $1 AND created_at > $2`,
+    [userId, since.toISOString()]
+  ).then((result) => result.rows.map(rowToIdea));
+}

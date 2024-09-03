@@ -9,12 +9,19 @@ import {
 } from "../model";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../backend/users";
-import { createIdea, getIdeas, getIdeasByUserId } from "../../../backend/db";
+import {
+  createIdea,
+  getIdeas,
+  getIdeasByUserId,
+  getIdeasByUserIdSince,
+} from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 import {
   IDEA_DESCRIPTION_MAX_LENGTH,
   IDEA_DESCRIPTION_MIN_LENGTH,
+  MAX_IDEAS_PER_HOUR_FREE_USER,
 } from "../../invariants";
+import { sub } from "date-fns";
 
 const EmptyIdea: Idea = {
   id: "",
@@ -65,6 +72,20 @@ export async function POST(req: NextRequest) {
   const user = await getUser(req);
   if (!user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const lastCreatedIdeas = await getIdeasByUserIdSince(
+    user.id,
+    sub(new Date(), { hours: 1 })
+  );
+
+  if (lastCreatedIdeas.length >= MAX_IDEAS_PER_HOUR_FREE_USER) {
+    return NextResponse.json(
+      {
+        message: `Free users can only create up to ${MAX_IDEAS_PER_HOUR_FREE_USER} ideas per hour. Become a <a href="/pricing">premium user</a> if you want to unlock more fatures.`,
+      },
+      { status: 429 }
+    );
   }
   const data = await req.json();
 
