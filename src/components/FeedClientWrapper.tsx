@@ -6,6 +6,8 @@ import IdeaFeed from "./IdeaFeed";
 import IdeaForm from "./IdeaForm";
 import { Idea, User } from "../app/api/model";
 import { format } from "date-fns";
+import { StoreProvider } from "easy-peasy";
+import { store } from "../store";
 
 type FeedClientWrapperProps = {
   initialFeed: Idea[];
@@ -27,9 +29,11 @@ export default function FeedClientWrapper(props: FeedClientWrapperProps) {
   return (
     <>
       {enableInteractions && (
-        <div className="col-lg-12">
-          <IdeaForm onIdeaAdded={addIdea} />
-        </div>
+        <StoreProvider store={store}>
+          <div className="col-lg-12">
+            <IdeaForm onIdeaAdded={addIdea} />
+          </div>
+        </StoreProvider>
       )}
       <div className="col-lg-12">
         <IdeaFeed ideas={ideas} enableInteractions={enableInteractions} />

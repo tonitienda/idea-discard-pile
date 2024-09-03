@@ -6,6 +6,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import Landing from "../components/Landing/index";
 import LandingNavBar from "../components/Landing/NavBar";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import NotificationsBar from "../components/NotificationsBar";
 
 export const metadata: Metadata = {
   title: "Aidia Hub - Where ideas connect",
@@ -53,6 +54,7 @@ export default async function RootLayout({
       <UserProvider>
         <body>
           {user ? <NavBar /> : <LandingNavBar />}
+          <NotificationsBar />
           {user ? (
             <div
               className="container"

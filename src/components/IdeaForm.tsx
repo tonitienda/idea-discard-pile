@@ -6,6 +6,11 @@ import { Idea } from "../app/api/model";
 import { trackIdeaCreation } from "../client/ga";
 
 import { BsX } from "react-icons/bs";
+import { useStoreActions } from "../store";
+import {
+  IDEA_DESCRIPTION_MAX_LENGTH,
+  IDEA_DESCRIPTION_MIN_LENGTH,
+} from "../app/invariants";
 interface IdeaFormProps {
   onIdeaAdded: (idea: Idea) => void;
 }
@@ -64,7 +69,8 @@ export default function IdeaForm(props: IdeaFormProps) {
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
-  const [submissionError, setSubmissionError] = useState<Error | null>(null);
+
+  const addNotification = useStoreActions((actions) => actions.addNotification);
 
   const addIdea = async (description: string): Promise<void> => {
     setSubmissionSuccess(null);
@@ -76,7 +82,10 @@ export default function IdeaForm(props: IdeaFormProps) {
     if (postError) {
       setSubmissionSuccess(false);
       setSubmittingIdea(false);
-      setSubmissionError(postError);
+      addNotification({
+        level: "danger",
+        message: postError.message,
+      });
       return;
     }
 
@@ -86,14 +95,22 @@ export default function IdeaForm(props: IdeaFormProps) {
 
     if (getError) {
       setSubmissionSuccess(false);
-      setSubmissionError(getError);
+      addNotification({
+        level: "danger",
+        message: getError.message,
+      });
     }
 
     setSubmissionPercent(100);
 
-    if (idea) {
+    if (idea && !getError) {
       trackIdeaCreation(idea.id, idea.title);
       props.onIdeaAdded(idea);
+
+      addNotification({
+        level: "success",
+        message: "Idea added successfully",
+      });
     } else {
       props.onIdeaAdded(null);
     }
@@ -115,26 +132,6 @@ export default function IdeaForm(props: IdeaFormProps) {
 
   return (
     <>
-      {submissionError && (
-        <div
-          className="alert alert-dismissible alert-danger"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            paddingRight: 6,
-            borderRadius: 6,
-          }}
-        >
-          <span
-            dangerouslySetInnerHTML={{ __html: submissionError.message }}
-          ></span>
-
-          <BsX
-            style={{ width: 25, height: 25, cursor: "pointer" }}
-            onClick={() => setSubmissionError(null)}
-          />
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="d-flex w-100">
         <textarea
           value={description}
@@ -143,12 +140,17 @@ export default function IdeaForm(props: IdeaFormProps) {
           rows={onFocus ? 4 : 1}
           onFocus={() => setOnFocus(true)}
           className="form-control me-2"
+          disabled={submittingIdea}
         />
         <button
           type="submit"
           onFocus={() => setOnFocus(true)}
           className="btn btn-primary"
-          disabled={submittingIdea || !description.trim()}
+          disabled={
+            submittingIdea ||
+            description.trim().length < IDEA_DESCRIPTION_MIN_LENGTH ||
+            description.trim().length > IDEA_DESCRIPTION_MAX_LENGTH
+          }
         >
           Share Idea
         </button>
