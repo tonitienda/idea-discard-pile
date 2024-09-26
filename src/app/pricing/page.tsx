@@ -4,11 +4,48 @@ import { StoreProvider } from "easy-peasy";
 import React from "react";
 import { store, useStoreActions } from "../../store";
 import { trackSubscriptionIntent } from "../../client/ga";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 function PricingPage() {
   const addNotification = useStoreActions((actions) => actions.addNotification);
 
-  const subscribeClick = (plan: string) => {
+  const subscribeClick = async (plan: string) => {
+    const stripe = await stripePromise;
+
+    const priceIds = {
+      premium: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_PREMIUM,
+      "premium+": process.env.NEXT_PUBLIC_STRIPE_PRODUCT_PREMIUM_PLUS,
+      support: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_SUPPORT,
+    };
+
+    try {
+      // Make API call to create the Stripe checkout session
+      const response = await fetch("/api/stripe/session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          priceId: priceIds[plan],
+        }),
+      });
+
+      const { sessionId } = await response.json();
+
+      // Redirect to Stripe Checkout
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        console.error("Stripe checkout error:", error);
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    }
+
     addNotification({
       level: "info",
       message: `Premuim features are coming soon!`,
@@ -19,7 +56,6 @@ function PricingPage() {
 
   return (
     <div className="container">
-      {/* Support the Platform Section */}
       <div className="card mt-5">
         <div className="card-body">
           <h3 className="card-title">Support the Platform</h3>
@@ -41,7 +77,6 @@ function PricingPage() {
       <h1 className="text-center mb-4">Choose Your Plan</h1>
 
       <div className="row d-flex justify-content-center">
-        {/* Free Plan */}
         <div className="col-md-4 d-flex">
           <div className="card mb-4 box-shadow flex-fill d-flex flex-column">
             <div className="card-header">
@@ -68,7 +103,6 @@ function PricingPage() {
           </div>
         </div>
 
-        {/* Premium Plan */}
         <div className="col-md-4 d-flex">
           <div className="card mb-4 box-shadow flex-fill d-flex flex-column">
             <div className="card-header">
@@ -76,7 +110,7 @@ function PricingPage() {
             </div>
             <div className="card-body d-flex flex-column">
               <h1 className="card-title pricing-card-title">
-                $7.99 <small className="text-muted">/ mo</small>
+                $3.99 <small className="text-muted">/ mo</small>
               </h1>
               <ul className="list-unstyled mt-3 mb-4 flex-grow-1">
                 <li>Everything in the Free Plan</li>
@@ -96,7 +130,6 @@ function PricingPage() {
           </div>
         </div>
 
-        {/* Premium+ Plan */}
         <div className="col-md-4 d-flex">
           <div className="card mb-4 box-shadow flex-fill d-flex flex-column">
             <div className="card-header">
@@ -104,7 +137,7 @@ function PricingPage() {
             </div>
             <div className="card-body d-flex flex-column">
               <h1 className="card-title pricing-card-title">
-                $14.99 <small className="text-muted">/ mo</small>
+                $7.99 <small className="text-muted">/ mo</small>
               </h1>
               <ul className="list-unstyled mt-3 mb-4 flex-grow-1">
                 <li>Everything in the Premium Plan</li>
