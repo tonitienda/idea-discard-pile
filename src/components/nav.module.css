@@ -38,7 +38,7 @@
   color: var(--ink);
 }
 
-/* A spot of light inside the pencil outline. */
+/* The light in the corner the outline left open. */
 .markLight {
   fill: var(--gold);
 }

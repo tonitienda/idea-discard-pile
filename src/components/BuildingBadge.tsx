@@ -1,27 +1,27 @@
 import styles from "./building.module.css";
 
-// The site's mark, inked in: the dashed pencil square of "not built yet"
-// drawn solid, with the gold light inside.
+// The site's mark, finished: the outline that was left open is closed, with
+// the gold light now inside it.
 export function BuildingMark({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox="0 0 20 20"
+      viewBox="0 0 32 32"
       width="16"
       height="16"
       aria-hidden="true"
     >
       <rect
-        x="2"
-        y="2"
-        width="16"
-        height="16"
-        rx="3"
+        x="5"
+        y="5"
+        width="22"
+        height="22"
+        rx="6.2"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.5"
+        strokeWidth="4"
       />
-      <rect className={styles.markLight} x="6.5" y="6.5" width="7" height="7" rx="1" />
+      <rect className={styles.markLight} x="11" y="11" width="10" height="10" rx="1.6" />
     </svg>
   );
 }
