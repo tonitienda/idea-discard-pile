@@ -10,10 +10,9 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../backend/users";
 import {
+  countIdeasByUserIdSince,
   createIdea,
-  getIdeas,
   getIdeasByUserId,
-  getIdeasByUserIdSince,
 } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 import {
@@ -23,49 +22,14 @@ import {
 } from "../../invariants";
 import { sub } from "date-fns";
 
-const EmptyIdea: Idea = {
-  id: "",
-  title: "",
-  description: "",
-  discardedReason: "",
-  tags: [],
-  createdAt: "",
-  updatedAt: "",
-  owner: null,
-  reactions: {
-    [INTERACTION_LOVE]: 0,
-    [INTERACTION_FUNNY]: 0,
-    [INTERACTION_NOT_USEFUL]: 0,
-    [INTERACTION_SUPPORT]: 0,
-  },
-  myReactions: {
-    [INTERACTION_LOVE]: false,
-    [INTERACTION_FUNNY]: false,
-    [INTERACTION_NOT_USEFUL]: false,
-    [INTERACTION_SUPPORT]: false,
-  },
-  isExample: false,
-};
-
 export async function GET(req: NextRequest) {
-  try {
-    console.error("GET2", req.url);
-    const user = await getUser(req);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const items: Idea[] = await getIdeasByUserId(user.id);
-
-    console.log("Total ideas", items.length);
-    return NextResponse.json({ items }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "An error occurred while fetching ideas" },
-      { status: 500 }
-    );
+  const user = await getUser(req);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const items: Idea[] = await getIdeasByUserId(user.id);
+  return NextResponse.json({ items }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -74,27 +38,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const lastCreatedIdeas = await getIdeasByUserIdSince(
+  const recentCount = await countIdeasByUserIdSince(
     user.id,
     sub(new Date(), { hours: 1 })
   );
 
-  if (lastCreatedIdeas.length >= MAX_IDEAS_PER_HOUR_FREE_USER) {
+  if (recentCount >= MAX_IDEAS_PER_HOUR_FREE_USER) {
     return NextResponse.json(
       {
-        message: `Free users can only create up to ${MAX_IDEAS_PER_HOUR_FREE_USER} ideas per hour. Become a <a href="/pricing">premium user</a> if you want to unlock more fatures.`,
+        message: `You can share up to ${MAX_IDEAS_PER_HOUR_FREE_USER} ideas per hour. Please try again later.`,
       },
       { status: 429 }
     );
   }
-  const data = await req.json();
 
-  const { description } = data;
+  let data: { description?: unknown };
+  try {
+    data = await req.json();
+  } catch {
+    return NextResponse.json({ message: "Invalid JSON" }, { status: 400 });
+  }
 
-  console.log("Description:", description);
+  const description =
+    typeof data.description === "string" ? data.description.trim() : "";
 
   if (
-    !description ||
     description.length < IDEA_DESCRIPTION_MIN_LENGTH ||
     description.length > IDEA_DESCRIPTION_MAX_LENGTH
   ) {
@@ -106,41 +74,29 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let ideaCompletion = await analyzeIdea(description, user.id);
-
-  if (!ideaCompletion) {
-    ideaCompletion = {
-      ideaProbability: 0,
-      spamProbability: 0,
-      spamExplanation: "",
-      offensiveProbability: 0,
-      relevanceProbability: 0,
-      sentiment: "neutral",
-      uniquenessProbability: 0,
-      clarityProbability: 0,
-      culturalSensitivity: 0,
-      engagementPotential: 0,
-      tags: [],
-      title: "Untitled",
-    };
+  // Ideas are published only after moderation, so a failed analysis
+  // rejects the submission instead of publishing unchecked content.
+  const analysis = await analyzeIdea(description, user.id);
+  if (!analysis) {
+    return NextResponse.json(
+      {
+        message:
+          "We couldn't process your idea right now. Please try again in a minute.",
+      },
+      { status: 503 }
+    );
   }
-
-  console.log("Idea completion", ideaCompletion);
 
   const id = uuid();
 
   const idea: Idea = {
     id,
-    title: ideaCompletion.title || "Untitled",
+    title: analysis.title,
     description,
-    tags:
-      ideaCompletion.tags?.map((t) => t.toLowerCase().replaceAll(" ", "")) ||
-      [],
+    tags: analysis.tags,
     owner: user,
-    isFlagged: [
-      ideaCompletion.spamProbability,
-      ideaCompletion.offensiveProbability,
-    ].some((v) => v > 0.5),
+    isFlagged:
+      analysis.spamProbability > 0.5 || analysis.offensiveProbability > 0.5,
     reactions: {
       [INTERACTION_LOVE]: 0,
       [INTERACTION_FUNNY]: 0,
@@ -156,18 +112,8 @@ export async function POST(req: NextRequest) {
     isExample: false,
   };
 
-  const ideaModeration: IdeaModeration = {
-    ideaId: id,
-    ...ideaCompletion,
-  };
+  const ideaModeration: IdeaModeration = { ideaId: id, ...analysis };
 
-  // TODO
-  // Limit users to a max of 1 idea per day and a max of x characters per idea. (each token costs money)
-  // Premium users can get more ideas per day (10?), longer ideas, and the description corrected
-  // Maybe the difference between premium and premium+ is around the number of ideas or the length of their descriptions.
-  // But think about how many ideas a user will have.
-  // Also maybe premum have titles of 3-10 words and normal users 3-5 and cannot edit the title.
-  // Maybe premium have more tags. Sell is as "better quallity ideas" and "more visibility"
   await createIdea(idea, ideaModeration);
 
   return NextResponse.json({ id }, { status: 201 });

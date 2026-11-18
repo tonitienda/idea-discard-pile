@@ -202,6 +202,5 @@ export async function getFeed(userId?: string): Promise<Idea[]> {
     ideas.push(...items);
   }
 
-  console.log("Total ideas", ideas.length);
   return ideas;
 }

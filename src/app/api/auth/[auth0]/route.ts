@@ -6,7 +6,12 @@ import {
   handleCallback,
 } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
-import { getUserBySub, createUser } from "../../../../backend/db";
+import {
+  getUserBySub,
+  createUser,
+  isHandleTaken,
+} from "../../../../backend/db";
+import { toHandle } from "../../../../backend/users";
 import { v4 as uuid } from "uuid";
 
 export const GET = handleAuth({
@@ -27,13 +32,20 @@ export const GET = handleAuth({
 
         if (!existingUser) {
           // If the user doesn't exist, add them to your database
+          // Handles are unique: add a numeric suffix if the nickname is taken
+          let handle = toHandle(user.nickname);
+          while (await isHandleTaken(handle)) {
+            const suffix = String(Math.floor(1000 + Math.random() * 9000));
+            handle = handle.slice(0, 15 - suffix.length) + suffix;
+          }
+
           await createUser({
             id: uuid(),
             sub: user.sub,
             email: user.email,
-            name: user.name,
+            name: user.name || handle,
             picture: user.picture,
-            handle: user.nickname,
+            handle,
           });
 
           // Redirect to profile page for new users

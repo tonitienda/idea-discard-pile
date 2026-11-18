@@ -1,5 +1,5 @@
 // DB Client
-import { Client, Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import {
   Idea,
   User,
@@ -25,6 +25,7 @@ const rowToIdea = (row: any): Idea => {
     },
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    deletedAt: row.deleted_at ?? undefined,
     tags: row.tags,
     isFlagged: row.flagged,
     reactions: {
@@ -62,18 +63,26 @@ const pool = new Pool({
   password: process.env.POSTGRES_PASSWORD,
   host: process.env.POSTGRES_HOST,
   database: process.env.POSTGRES_DATABASE,
-  schema: process.env.POSTGRES_SCHEMA,
   ssl: true,
 });
 
-export async function connect(): Promise<Client> {
-  return pool.connect();
+export async function query(query: string, values: any[] = []) {
+  return pool.query(query, values);
 }
 
-export async function query(query: string, values: any[] = []) {
-  const client = await connect();
+// Runs fn inside a transaction on a single connection.
+async function withTransaction<T>(
+  fn: (client: PoolClient) => Promise<T>
+): Promise<T> {
+  const client = await pool.connect();
   try {
-    return await client.query(query, values);
+    await client.query("BEGIN");
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
   } finally {
     client.release();
   }
@@ -100,27 +109,27 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
     GROUP BY
         idea_id, reaction
 )
-        SELECT 
-          i.*, 
-          u.handle, 
-          u.picture, 
+        SELECT
+          i.*,
+          u.handle,
+          u.picture,
           COALESCE(
         jsonb_object_agg(
-            rc.reaction, 
+            rc.reaction,
             rc.reaction_count
-        ) FILTER (WHERE rc.reaction IS NOT NULL), 
+        ) FILTER (WHERE rc.reaction IS NOT NULL),
         '{}'::jsonb) AS reactions,
          COALESCE(
         jsonb_object_agg(
             mrc.reaction, TRUE
-        ) FILTER (WHERE mrc.reaction IS NOT NULL), 
+        ) FILTER (WHERE mrc.reaction IS NOT NULL),
         '{}'::jsonb) AS my_reactions
-    FROM ${schema}.ideas as i 
-    INNER JOIN ${schema}.users as u 
-      ON i.owner_id = u.id 
-    LEFT JOIN 
+    FROM ${schema}.ideas as i
+    INNER JOIN ${schema}.users as u
+      ON i.owner_id = u.id
+    LEFT JOIN
     reaction_counts rc ON i.id = rc.idea_id
-    LEFT JOIN 
+    LEFT JOIN
     my_reactions mrc ON i.id = mrc.idea_id
     WHERE i.deleted_at IS NULL
     AND i.flagged = false
@@ -133,11 +142,10 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
 }
 
 export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
-  console.log("Looking for ideas by user", userId);
   const result = await query(
     `SELECT i.*, u.handle, u.picture
-      FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u 
-      ON i.owner_id = u.id 
+      FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u
+      ON i.owner_id = u.id
       WHERE i.deleted_at IS NULL
       AND i.owner_id = $1
       ORDER BY i.created_at DESC`,
@@ -147,10 +155,10 @@ export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
   return result.rows.map(rowToIdea);
 }
 
-export async function getIdeaById(id: string): Promise<Idea> {
+export async function getIdeaById(id: string): Promise<Idea | null> {
   const result = await query(
-    `SELECT i.*, u.handle, u.picture 
-    FROM ${schema}.ideas as i 
+    `SELECT i.*, u.handle, u.picture
+    FROM ${schema}.ideas as i
     INNER JOIN ${schema}.users as u
     ON i.owner_id = u.id
     WHERE i.id = $1`,
@@ -168,14 +176,11 @@ export async function createIdea(
   idea: Idea,
   ideaModeration: IdeaModeration
 ): Promise<void> {
-  console.log("Creating idea", idea, ideaModeration);
-  // Start a transaction and insert both idea and idea moderation in the same transaction
+  const now = new Date().toISOString();
 
-  try {
-    await query("BEGIN");
-
-    await query(
-      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+  await withTransaction(async (client) => {
+    await client.query(
+      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [
         idea.id,
         idea.title,
@@ -183,44 +188,51 @@ export async function createIdea(
         idea.tags,
         idea.owner.id,
         idea.isFlagged,
-        new Date().toISOString(),
-        new Date().toISOString(),
+        now,
+        now,
       ]
     );
 
-    await query(
+    const pct = (v: number) => Math.round((Number(v) || 0) * 100);
+
+    await client.query(
       `INSERT INTO ${schema}.ideas_moderation (idea_id, idea_probability, spam_probability, spam_explanation, offensive_probability, relevance_probability, sentiment, uniqueness_probability, clarity_probability, cultural_sensitivity, engagement_potential) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         idea.id,
-        ideaModeration.ideaProbability * 100,
-        ideaModeration.spamProbability * 100,
+        pct(ideaModeration.ideaProbability),
+        pct(ideaModeration.spamProbability),
         ideaModeration.spamExplanation || "",
-        ideaModeration.offensiveProbability * 100,
-        ideaModeration.relevanceProbability * 100,
+        pct(ideaModeration.offensiveProbability),
+        pct(ideaModeration.relevanceProbability),
         ideaModeration.sentiment || "neutral",
-        ideaModeration.uniquenessProbability * 100,
-        ideaModeration.clarityProbability * 100,
-        ideaModeration.culturalSensitivity * 100,
-        ideaModeration.engagementPotential * 100,
+        pct(ideaModeration.uniquenessProbability),
+        pct(ideaModeration.clarityProbability),
+        pct(ideaModeration.culturalSensitivity),
+        pct(ideaModeration.engagementPotential),
       ]
     );
-
-    await query("COMMIT");
-  } catch (e) {
-    await query("ROLLBACK");
-    throw e;
-  }
+  });
 }
 
-export async function updateIdea(idea: Idea): Promise<Idea> {
-  return query(
-    `UPDATE ${schema}.ideas SET title = $1, description = $2, updated_at = $4 WHERE id = $5 RETURNING *`,
-    [idea.title, idea.description, new Date().toISOString(), idea.id]
+export async function updateIdea(
+  id: string,
+  { title, description }: { title: string; description: string }
+): Promise<void> {
+  await query(
+    `UPDATE ${schema}.ideas SET title = $1, description = $2, updated_at = $3 WHERE id = $4`,
+    [title, description, new Date().toISOString(), id]
   );
 }
 
-export async function getUserBySub(sub: string): Promise<User> {
-  console.log("Getting user by sub", sub);
+export async function softDeleteIdea(id: string): Promise<void> {
+  const now = new Date().toISOString();
+  await query(
+    `UPDATE ${schema}.ideas SET deleted_at = $1, updated_at = $1 WHERE id = $2`,
+    [now, id]
+  );
+}
+
+export async function getUserBySub(sub: string): Promise<User | null> {
   const result = await query(
     `SELECT * FROM ${schema}.users WHERE auth0_sub = $1`,
     [sub]
@@ -233,66 +245,81 @@ export async function getUserBySub(sub: string): Promise<User> {
   return rowToUser(result.rows[0]);
 }
 
-export async function createUser(user: User): Promise<User> {
-  console.log("Creating user", user);
-  return query(
-    `INSERT INTO ${schema}.users (id, auth0_sub, name, email, handle, picture) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+export async function isHandleTaken(
+  handle: string,
+  exceptUserId?: string
+): Promise<boolean> {
+  const result = await query(
+    `SELECT 1 FROM ${schema}.users WHERE lower(handle) = lower($1) AND id IS DISTINCT FROM $2`,
+    [handle, exceptUserId || null]
+  );
+  return result.rows.length > 0;
+}
+
+export async function createUser(user: User): Promise<void> {
+  await query(
+    `INSERT INTO ${schema}.users (id, auth0_sub, name, email, handle, picture) VALUES ($1, $2, $3, $4, $5, $6)`,
     [user.id, user.sub, user.name, user.email, user.handle, user.picture]
   );
 }
 
 export async function getAdminDashboardInfo(): Promise<AdminDashboard> {
-  const ideasCount = await query(`SELECT COUNT(*) FROM ${schema}.ideas`);
-  const usersCount = await query(`SELECT COUNT(*) FROM ${schema}.users`);
+  const result = await query(`SELECT
+      (SELECT COUNT(*) FROM ${schema}.users) AS users_count,
+      (SELECT COUNT(*) FROM ${schema}.ideas WHERE deleted_at IS NULL) AS ideas_count,
+      (SELECT COUNT(*) FROM ${schema}.ideas WHERE deleted_at IS NULL AND flagged) AS flagged_ideas_count,
+      (SELECT COUNT(*) FROM ${schema}.idea_reactions) AS reactions_count`);
 
+  const row = result.rows[0];
   return {
-    ideasCount: ideasCount.rows[0].count,
-    usersCount: usersCount.rows[0].count,
+    usersCount: Number(row.users_count),
+    ideasCount: Number(row.ideas_count),
+    flaggedIdeasCount: Number(row.flagged_ideas_count),
+    reactionsCount: Number(row.reactions_count),
   };
 }
 
-// TODO - Also insert events, so we keep track of the changes
 export async function createIdeaReaction(
   ideaId: string,
   userId: string,
   reaction: string
 ): Promise<void> {
-  console.log("Inserting idea reaction", ideaId, reaction, userId);
   await query(
-    `INSERT INTO ${schema}.idea_reactions (idea_id, user_id, reaction) VALUES ($1, $2, $3)`,
+    `INSERT INTO ${schema}.idea_reactions (idea_id, user_id, reaction) VALUES ($1, $2, $3)
+     ON CONFLICT (idea_id, user_id, reaction) DO NOTHING`,
     [ideaId, userId, reaction]
   );
 }
 
-// TODO - Also insert events, so we keep track of the changes
 export async function deleteIdeaReaction(
   ideaId: string,
   userId: string,
   reaction: string
 ): Promise<void> {
-  console.log("Deleting idea reaction", ideaId, reaction, userId);
   await query(
     `DELETE FROM ${schema}.idea_reactions WHERE idea_id=$1 AND user_id=$2 AND reaction=$3`,
     [ideaId, userId, reaction]
   );
 }
 
-export function updateUserProfile(
+export async function updateUserProfile(
   id: string,
   { name, handle, picture }: { name: string; handle: string; picture: string }
 ): Promise<User> {
-  return query(
-    `UPDATE ${schema}.users SET name=$1, handle = $2, picture = $3 WHERE id = $4 RETURNING *`,
-    [name, handle, picture, id]
+  const result = await query(
+    `UPDATE ${schema}.users SET name=$1, handle = $2, picture = $3, updated_at = $4 WHERE id = $5 RETURNING *`,
+    [name, handle, picture, new Date().toISOString(), id]
   );
+  return rowToUser(result.rows[0]);
 }
 
-export function getIdeasByUserIdSince(
+export async function countIdeasByUserIdSince(
   userId: string,
   since: Date
-): Promise<Idea[]> {
-  return query(
-    `SELECT * FROM ${schema}.ideas WHERE owner_id = $1 AND created_at > $2`,
+): Promise<number> {
+  const result = await query(
+    `SELECT COUNT(*) FROM ${schema}.ideas WHERE owner_id = $1 AND created_at > $2`,
     [userId, since.toISOString()]
-  ).then((result) => result.rows.map(rowToIdea));
+  );
+  return Number(result.rows[0].count);
 }

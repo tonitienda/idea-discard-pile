@@ -1,8 +1,20 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
-export default function DateComponent({ date }) {
-  // Ensure consistent formatting
-  const formattedDate = format(new Date(date), "yyyy/MM/dd HH:mm:ss");
+// The server renders in UTC and the browser in local time, so the local
+// format is applied only after mount to avoid a hydration mismatch.
+export default function DateComponent({ date }: { date: Date | string }) {
+  const d = new Date(date);
+  const iso = isNaN(d.getTime()) ? "" : d.toISOString();
+  const [label, setLabel] = useState(iso.slice(0, 10).replaceAll("-", "/"));
 
-  return <>{formattedDate}</>;
+  useEffect(() => {
+    if (iso) {
+      setLabel(format(new Date(iso), "yyyy/MM/dd HH:mm"));
+    }
+  }, [iso]);
+
+  return <time dateTime={iso}>{label}</time>;
 }

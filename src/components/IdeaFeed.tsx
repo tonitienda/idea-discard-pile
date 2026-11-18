@@ -36,9 +36,7 @@ export default function IdeaFeed({ ideas, enableInteractions }: IdeaFeedProps) {
             key={idea.id || idx}
             enableInteractions={enableInteractions}
             onInteractionAttempted={(ideaId, action) => {
-              console.log("onInteractionAttempted", ideaId, action);
               if (!enableInteractions) {
-                console.log("Prompt to login set to true");
                 setPromptToLoginModalOpen(true);
               }
             }}

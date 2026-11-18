@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { User } from "../api/model";
-import { set } from "date-fns";
 
 export function ProfileForm({ user }: { user: User }) {
   const [pictureUrl, setPictureUrl] = useState(user.picture);
@@ -10,7 +9,6 @@ export function ProfileForm({ user }: { user: User }) {
   const [successMessage, setSuccessMessage] = useState("");
 
   const saveProfile = async (e: React.FormEvent) => {
-    console.log("saveProfile");
     e.preventDefault();
     // Save the profile. Get fields value by input name
     const handle = (e.target as any).handle.value;

@@ -5,7 +5,6 @@ import { useState } from "react";
 import IdeaFeed from "./IdeaFeed";
 import IdeaForm from "./IdeaForm";
 import { Idea, User } from "../app/api/model";
-import { format } from "date-fns";
 import { StoreProvider } from "easy-peasy";
 import { store } from "../store";
 
