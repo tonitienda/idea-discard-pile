@@ -127,7 +127,12 @@
   color: var(--ink-3);
 }
 
-.verdict {
+.badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
   margin-left: auto;
 }
 

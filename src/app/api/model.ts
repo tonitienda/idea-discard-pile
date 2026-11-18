@@ -43,7 +43,17 @@ export type Idea = {
   myReactions: { [key: string]: boolean };
   teardown?: Teardown;
   commentCount?: number;
+  // Set when the owner says they are building it.
+  building?: Building;
 };
+
+export type Building = {
+  since: string;
+  // A prototype, repo or demo, if the owner shared one.
+  url?: string;
+};
+
+export const BUILDING_URL_MAX_LENGTH = 500;
 
 export type Comment = {
   id: string;
@@ -53,7 +63,7 @@ export type Comment = {
   author: PublicUser;
 };
 
-export const NOTIFICATION_TYPES = ["comment", "icanhelp"] as const;
+export const NOTIFICATION_TYPES = ["comment", "icanhelp", "building"] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
 export type Notification = {

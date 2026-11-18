@@ -11,6 +11,7 @@ import {
   INTERACTION_NOT_USEFUL,
   INTERACTION_SUPPORT,
   Teardown,
+  Building,
   Comment,
   Notification,
 } from "../../app/api/model";
@@ -27,6 +28,9 @@ const rowToIdea = (row: any): Idea => {
     teardown: row.teardown ?? undefined,
     commentCount:
       row.comment_count === undefined ? undefined : Number(row.comment_count),
+    building: row.building_since
+      ? { since: row.building_since, url: row.building_url ?? undefined }
+      : undefined,
     owner: {
       id: row.owner_id,
       handle: `@${row.handle}`,
@@ -277,6 +281,40 @@ export async function softDeleteIdea(id: string): Promise<void> {
   );
 }
 
+// Marks an idea as being built, or updates its link. The start date is kept
+// if it was already being built. Returns whether it just started.
+export async function startBuilding(
+  id: string,
+  url: string | null
+): Promise<{ building: Building; started: boolean }> {
+  const now = new Date().toISOString();
+  const result = await query(
+    `UPDATE ${schema}.ideas AS i
+     SET building_since = COALESCE(i.building_since, $2),
+         building_url = $3,
+         updated_at = $2
+     FROM ${schema}.ideas AS before
+     WHERE i.id = $1 AND before.id = i.id
+     RETURNING i.building_since, i.building_url,
+       before.building_since IS NULL AS started`,
+    [id, now, url]
+  );
+  const row = result.rows[0];
+  return {
+    building: { since: row.building_since, url: row.building_url ?? undefined },
+    started: row.started,
+  };
+}
+
+export async function stopBuilding(id: string): Promise<void> {
+  await query(
+    `UPDATE ${schema}.ideas
+     SET building_since = NULL, building_url = NULL, updated_at = $2
+     WHERE id = $1`,
+    [id, new Date().toISOString()]
+  );
+}
+
 export async function saveTeardown(
   ideaId: string,
   teardown: Teardown,
@@ -493,6 +531,27 @@ export async function notifyHelpOffered(
      VALUES ($1, $2, $3, $4, 'icanhelp')
      ON CONFLICT (user_id, actor_id, idea_id) WHERE type = 'icanhelp' DO NOTHING`,
     [uuid(), ideaOwnerId, helperId, ideaId]
+  );
+}
+
+// Tells everyone who offered to help that the owner started building.
+// Once per helper and idea, however often the owner stops and starts.
+export async function notifyBuildingStarted(
+  ideaOwnerId: string,
+  ideaId: string
+): Promise<void> {
+  const helpers = await getHelpers(ideaId);
+  await Promise.all(
+    helpers
+      .filter((h) => h.id !== ideaOwnerId)
+      .map((h) =>
+        query(
+          `INSERT INTO ${schema}.notifications (id, user_id, actor_id, idea_id, type)
+           VALUES ($1, $2, $3, $4, 'building')
+           ON CONFLICT (user_id, actor_id, idea_id) WHERE type = 'building' DO NOTHING`,
+          [uuid(), h.id, ideaOwnerId, ideaId]
+        )
+      )
   );
 }
 

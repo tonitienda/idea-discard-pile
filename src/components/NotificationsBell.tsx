@@ -6,8 +6,13 @@ import { Notification } from "../app/api/model";
 import DateComponent from "./DateComponent";
 import styles from "./notifications-bell.module.css";
 
-const describe = (n: Notification) =>
-  n.type === "comment" ? "commented on" : "can help with";
+const VERBS: Record<Notification["type"], string> = {
+  comment: "commented on",
+  icanhelp: "can help with",
+  building: "started building",
+};
+
+const describe = (n: Notification) => VERBS[n.type] ?? "updated";
 
 export default function NotificationsBell() {
   const [items, setItems] = useState<Notification[]>([]);
