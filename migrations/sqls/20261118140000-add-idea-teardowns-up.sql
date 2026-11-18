@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS idea_teardowns (
+  idea_id UUID PRIMARY KEY REFERENCES ideas(id),
+  content JSONB NOT NULL,
+  model TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

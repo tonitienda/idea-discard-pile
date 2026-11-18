@@ -10,9 +10,16 @@ import { useState } from "react";
 interface IdeaFeedProps {
   ideas: Idea[];
   enableInteractions: boolean;
+  viewerId?: string;
+  openTeardownFor?: string;
 }
 
-export default function IdeaFeed({ ideas, enableInteractions }: IdeaFeedProps) {
+export default function IdeaFeed({
+  ideas,
+  enableInteractions,
+  viewerId,
+  openTeardownFor,
+}: IdeaFeedProps) {
   const [promptToLoginModalOpen, setPromptToLoginModalOpen] = useState(false);
 
   if (!ideas.length) {
@@ -35,6 +42,8 @@ export default function IdeaFeed({ ideas, enableInteractions }: IdeaFeedProps) {
             idea={idea}
             key={idea.id || idx}
             enableInteractions={enableInteractions}
+            viewerId={viewerId}
+            teardownOpen={idea.id === openTeardownFor}
             onInteractionAttempted={(ideaId, action) => {
               if (!enableInteractions) {
                 setPromptToLoginModalOpen(true);

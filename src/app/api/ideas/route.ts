@@ -16,6 +16,7 @@ import {
 } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
 import {
+  DISCARDED_REASON_MAX_LENGTH,
   IDEA_DESCRIPTION_MAX_LENGTH,
   IDEA_DESCRIPTION_MIN_LENGTH,
   MAX_IDEAS_PER_HOUR_FREE_USER,
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let data: { description?: unknown };
+  let data: { description?: unknown; discardedReason?: unknown };
   try {
     data = await req.json();
   } catch {
@@ -61,6 +62,19 @@ export async function POST(req: NextRequest) {
 
   const description =
     typeof data.description === "string" ? data.description.trim() : "";
+  const discardedReason =
+    typeof data.discardedReason === "string"
+      ? data.discardedReason.trim()
+      : "";
+
+  if (discardedReason.length > DISCARDED_REASON_MAX_LENGTH) {
+    return NextResponse.json(
+      {
+        message: `The reason you dropped it must be under ${DISCARDED_REASON_MAX_LENGTH} characters`,
+      },
+      { status: 400 }
+    );
+  }
 
   if (
     description.length < IDEA_DESCRIPTION_MIN_LENGTH ||
@@ -93,6 +107,7 @@ export async function POST(req: NextRequest) {
     id,
     title: analysis.title,
     description,
+    discardedReason: discardedReason || undefined,
     tags: analysis.tags,
     owner: user,
     isFlagged:

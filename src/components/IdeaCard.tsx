@@ -23,17 +23,22 @@ import {
   INTERACTION_SUPPORT,
 } from "../app/api/model";
 import { trackIdeaReaction } from "../client/ga";
+import TeardownPanel from "./TeardownPanel";
 
 type IdeaCardProps = {
   idea: Idea;
   enableInteractions: boolean;
   onInteractionAttempted?: (ideaId: string, action: string) => void;
+  viewerId?: string;
+  teardownOpen?: boolean;
 };
 
 export function IdeaCard({
   idea,
   enableInteractions,
   onInteractionAttempted,
+  viewerId,
+  teardownOpen,
 }: IdeaCardProps) {
   const [reactions, setReactions] = useState<{
     [key: string]: { [key: string]: boolean };
@@ -184,6 +189,14 @@ export function IdeaCard({
           </span>
         ))}
       </div>
+      {!idea.isExample && !idea.isFlagged && (
+        <TeardownPanel
+          ideaId={idea.id}
+          teardown={idea.teardown}
+          canGenerate={!!viewerId && viewerId === idea.owner.id}
+          defaultOpen={teardownOpen}
+        />
+      )}
       {!idea.isExample && (
         <div className={`${styles.actions}`}>
           <span>

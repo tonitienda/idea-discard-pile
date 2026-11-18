@@ -9,6 +9,7 @@ import {
   INTERACTION_FUNNY,
   INTERACTION_NOT_USEFUL,
   INTERACTION_SUPPORT,
+  Teardown,
 } from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
@@ -18,6 +19,8 @@ const rowToIdea = (row: any): Idea => {
     id: row.id,
     title: row.title,
     description: row.description,
+    discardedReason: row.discarded_reason ?? undefined,
+    teardown: row.teardown ?? undefined,
     owner: {
       id: row.owner_id,
       handle: `@${row.handle}`,
@@ -113,6 +116,7 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
           i.*,
           u.handle,
           u.picture,
+          t.content AS teardown,
           COALESCE(
         jsonb_object_agg(
             rc.reaction,
@@ -131,9 +135,10 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
     reaction_counts rc ON i.id = rc.idea_id
     LEFT JOIN
     my_reactions mrc ON i.id = mrc.idea_id
+    LEFT JOIN ${schema}.idea_teardowns t ON i.id = t.idea_id
     WHERE i.deleted_at IS NULL
     AND i.flagged = false
-    GROUP BY i.id, u.handle, u.picture
+    GROUP BY i.id, u.handle, u.picture, t.content
     ORDER BY i.created_at DESC`,
     [userId || null]
   );
@@ -143,9 +148,10 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
 
 export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
   const result = await query(
-    `SELECT i.*, u.handle, u.picture
+    `SELECT i.*, u.handle, u.picture, t.content AS teardown
       FROM ${schema}.ideas as i INNER JOIN ${schema}.users as u
       ON i.owner_id = u.id
+      LEFT JOIN ${schema}.idea_teardowns t ON i.id = t.idea_id
       WHERE i.deleted_at IS NULL
       AND i.owner_id = $1
       ORDER BY i.created_at DESC`,
@@ -157,10 +163,11 @@ export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
 
 export async function getIdeaById(id: string): Promise<Idea | null> {
   const result = await query(
-    `SELECT i.*, u.handle, u.picture
+    `SELECT i.*, u.handle, u.picture, t.content AS teardown
     FROM ${schema}.ideas as i
     INNER JOIN ${schema}.users as u
     ON i.owner_id = u.id
+    LEFT JOIN ${schema}.idea_teardowns t ON i.id = t.idea_id
     WHERE i.id = $1`,
     [id]
   );
@@ -180,11 +187,12 @@ export async function createIdea(
 
   await withTransaction(async (client) => {
     await client.query(
-      `INSERT INTO ${schema}.ideas (id, title, description, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      `INSERT INTO ${schema}.ideas (id, title, description, discarded_reason, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
       [
         idea.id,
         idea.title,
         idea.description,
+        idea.discardedReason || null,
         idea.tags,
         idea.owner.id,
         idea.isFlagged,
@@ -229,6 +237,18 @@ export async function softDeleteIdea(id: string): Promise<void> {
   await query(
     `UPDATE ${schema}.ideas SET deleted_at = $1, updated_at = $1 WHERE id = $2`,
     [now, id]
+  );
+}
+
+export async function saveTeardown(
+  ideaId: string,
+  teardown: Teardown,
+  model: string
+): Promise<void> {
+  await query(
+    `INSERT INTO ${schema}.idea_teardowns (idea_id, content, model) VALUES ($1, $2, $3)
+     ON CONFLICT (idea_id) DO NOTHING`,
+    [ideaId, JSON.stringify(teardown), model]
   );
 }
 
