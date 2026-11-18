@@ -8,6 +8,8 @@ import { IdeaCard } from "./IdeaCard";
 import PromptToLoginModal from "./PromptToLoginModal";
 import { VERDICT_LABELS } from "./TeardownPanel";
 
+const BUILDING = "building" as const;
+
 interface IdeaFeedProps {
   ideas: Idea[];
   enableInteractions: boolean;
@@ -30,19 +32,22 @@ export default function IdeaFeed({
   emptyMessage = "No ideas here yet.",
 }: IdeaFeedProps) {
   const [promptToLoginModalOpen, setPromptToLoginModalOpen] = useState(false);
-  const [verdict, setVerdict] = useState<Verdict | null>(null);
+  // A verdict, or "building" for ideas someone is building.
+  const [filter, setFilter] = useState<Verdict | typeof BUILDING | null>(null);
 
   if (!ideas.length) {
     return <p className={styles.empty}>{emptyMessage}</p>;
   }
 
-  const count = (v: Verdict) =>
-    ideas.filter((idea) => idea.teardown?.verdict === v).length;
+  const matches = (idea: Idea, f: Verdict | typeof BUILDING) =>
+    f === BUILDING ? !!idea.building : idea.teardown?.verdict === f;
+  const count = (f: Verdict | typeof BUILDING) =>
+    ideas.filter((idea) => matches(idea, f)).length;
   const verdicts = VERDICTS.filter((v) => count(v) > 0);
-  const showFilters = filterable && verdicts.length > 1;
-  const visible = verdict
-    ? ideas.filter((idea) => idea.teardown?.verdict === verdict)
-    : ideas;
+  const buildingCount = count(BUILDING);
+  const showFilters =
+    filterable && (verdicts.length > 1 || buildingCount > 0);
+  const visible = filter ? ideas.filter((idea) => matches(idea, filter)) : ideas;
 
   return (
     <>
@@ -55,18 +60,28 @@ export default function IdeaFeed({
           <button
             type="button"
             className={styles.filter}
-            aria-pressed={verdict === null}
-            onClick={() => setVerdict(null)}
+            aria-pressed={filter === null}
+            onClick={() => setFilter(null)}
           >
             All ideas
           </button>
+          {buildingCount > 0 && (
+            <button
+              type="button"
+              className={styles.filter}
+              aria-pressed={filter === BUILDING}
+              onClick={() => setFilter(BUILDING)}
+            >
+              Being built <span>{buildingCount}</span>
+            </button>
+          )}
           {verdicts.map((v) => (
             <button
               type="button"
               key={v}
               className={styles.filter}
-              aria-pressed={verdict === v}
-              onClick={() => setVerdict(v)}
+              aria-pressed={filter === v}
+              onClick={() => setFilter(v)}
             >
               {VERDICT_LABELS[v]} <span>{count(v)}</span>
             </button>

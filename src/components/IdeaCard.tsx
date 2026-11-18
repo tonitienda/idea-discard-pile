@@ -25,6 +25,7 @@ import {
 } from "../app/api/model";
 import { trackIdeaReaction } from "../client/ga";
 import TeardownPanel, { VerdictBadge } from "./TeardownPanel";
+import BuildingBadge from "./BuildingBadge";
 
 type IdeaCardProps = {
   idea: Idea;
@@ -134,9 +135,12 @@ export function IdeaCard({
         <span className={styles.meta}>
           <DateComponent date={new Date(idea.createdAt)} />
         </span>
-        {idea.teardown && !idea.isFlagged && (
-          <span className={styles.verdict}>
-            <VerdictBadge verdict={idea.teardown.verdict} />
+        {(idea.building || (idea.teardown && !idea.isFlagged)) && (
+          <span className={styles.badges}>
+            {idea.building && <BuildingBadge />}
+            {idea.teardown && !idea.isFlagged && (
+              <VerdictBadge verdict={idea.teardown.verdict} />
+            )}
           </span>
         )}
       </header>

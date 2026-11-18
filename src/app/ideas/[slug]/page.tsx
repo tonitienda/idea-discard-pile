@@ -6,6 +6,7 @@ import { BsArrowLeft } from "react-icons/bs";
 import IdeaFeed from "../../../components/IdeaFeed";
 import CommentsSection from "../../../components/CommentsSection";
 import HelpersList from "../../../components/HelpersList";
+import BuildingPanel from "../../../components/BuildingPanel";
 import { getComments, getHelpers, getIdeaBySlug } from "../../../backend/db";
 import { useUser } from "../../hooks/use-user";
 import { SITE_NAME } from "../../site";
@@ -79,6 +80,15 @@ export default async function IdeaPage({ params }: Props) {
         viewerId={user?.id}
         openTeardownFor={idea.id}
       />
+      {!idea.isFlagged && (
+        <BuildingPanel
+          ideaId={idea.id}
+          ownerHandle={idea.owner.handle}
+          createdAt={idea.createdAt}
+          building={idea.building}
+          isOwner={isOwner}
+        />
+      )}
       {isOwner && <HelpersList helpers={helpers} />}
       <CommentsSection
         ideaId={idea.id}
