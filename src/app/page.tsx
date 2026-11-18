@@ -1,31 +1,30 @@
-"use server";
-
-import Head from "next/head";
+import type { Metadata } from "next";
 
 import FeedClientWrapper from "../components/FeedClientWrapper";
-import { getFeed } from "../backend/ideas";
-import { getUser } from "../backend/users";
+import Hero from "../components/Hero";
+import { getIdeas } from "../backend/db";
 import { useUser } from "./hooks/use-user";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const user = await useUser();
-  const ideas = await getFeed(user?.id);
+  const ideas = await getIdeas(user?.id);
 
   return (
-    <>
-      <Head>
-        <title>Aidia Hub - Feed</title>
-        <meta
-          name="description"
-          content="Share and discover innovative ideas"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="row">
+      {!user && (
+        <div className="col-lg-12">
+          <Hero />
+        </div>
+      )}
       <FeedClientWrapper
         initialFeed={ideas}
         enableInteractions={!!user}
         user={user}
       />
-    </>
+    </div>
   );
 }

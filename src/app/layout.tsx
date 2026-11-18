@@ -3,15 +3,19 @@ import { Analytics } from "@vercel/analytics/react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import NavBar from "../components/NavBar";
 import { getSession } from "@auth0/nextjs-auth0";
-import Landing from "../components/Landing/index";
-import LandingNavBar from "../components/Landing/NavBar";
+import LoggedOutNavBar from "../components/LoggedOutNavBar";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import NotificationsBar from "../components/NotificationsBar";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site";
 
 export const metadata: Metadata = {
-  title: "Aidia Hub - Where ideas connect",
-  description:
-    "Share the ideas you never built, and find ones worth picking up.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} - The ideas people never built`,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: { siteName: SITE_NAME, type: "website" },
 };
 
 export default async function RootLayout({
@@ -32,23 +36,14 @@ export default async function RootLayout({
       </head>
       <UserProvider>
         <body>
-          {user ? <NavBar /> : <LandingNavBar />}
+          {user ? <NavBar /> : <LoggedOutNavBar />}
           <NotificationsBar />
-          {user ? (
-            <div
-              className="container"
-              style={{ paddingTop: 24, paddingBottom: 48 }}
-            >
-              {children}
-            </div>
-          ) : (
-            <div className="container" style={{ paddingTop: 60 }}>
-              <div className="row">
-                <Landing />
-              </div>
-              <div className="row">{children}</div>
-            </div>
-          )}
+          <div
+            className="container"
+            style={{ paddingTop: 24, paddingBottom: 48 }}
+          >
+            {children}
+          </div>
           <Analytics />
 
           {

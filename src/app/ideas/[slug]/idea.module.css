@@ -1,0 +1,12 @@
+.backLink {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.cta {
+  margin-top: 8px;
+  text-align: center;
+  color: #555;
+}

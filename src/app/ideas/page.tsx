@@ -1,35 +1,25 @@
-"use server";
-
-import Head from "next/head";
+import type { Metadata } from "next";
 import FeedClientWrapper from "../../components/FeedClientWrapper";
 
 import { getIdeasByUserId } from "../../backend/db";
 import { useUser } from "../hooks/use-user";
 
-export default async function Home() {
+export const metadata: Metadata = {
+  title: "My ideas",
+  robots: { index: false },
+};
+
+export default async function MyIdeas() {
   const user = await useUser();
   const ideas = user ? await getIdeasByUserId(user.id) : [];
 
   return (
-    <div>
-      <Head>
-        <title>Aidia Hub - My ideas</title>
-        <meta
-          name="description"
-          content="Share and discover innovative ideas"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="main">
-        <div className="row">
-          <FeedClientWrapper
-            initialFeed={ideas}
-            enableInteractions={!!user}
-            user={user}
-          />
-        </div>
-      </main>
+    <div className="row">
+      <FeedClientWrapper
+        initialFeed={ideas}
+        enableInteractions={!!user}
+        user={user}
+      />
     </div>
   );
 }

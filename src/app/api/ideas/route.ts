@@ -15,6 +15,7 @@ import {
   getIdeasByUserId,
 } from "../../../backend/db";
 import { analyzeIdea } from "../../../backend/ai/idea-analysis";
+import { toSlug } from "../../../backend/ideas";
 import {
   DISCARDED_REASON_MAX_LENGTH,
   IDEA_DESCRIPTION_MAX_LENGTH,
@@ -105,6 +106,7 @@ export async function POST(req: NextRequest) {
 
   const idea: Idea = {
     id,
+    slug: toSlug(analysis.title, id),
     title: analysis.title,
     description,
     discardedReason: discardedReason || undefined,
@@ -124,7 +126,6 @@ export async function POST(req: NextRequest) {
       [INTERACTION_NOT_USEFUL]: false,
       [INTERACTION_SUPPORT]: false,
     },
-    isExample: false,
   };
 
   const ideaModeration: IdeaModeration = { ideaId: id, ...analysis };
