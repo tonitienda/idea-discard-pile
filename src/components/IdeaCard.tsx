@@ -179,7 +179,11 @@ export function IdeaCard({
         </div>
       </div>
       <div className={styles.content}>
-        <h2 className={styles.title}>{idea.title}</h2>
+        <h2 className={styles.title}>
+          <a href={`/ideas/${idea.slug}`} className={styles.titleLink}>
+            {idea.title}
+          </a>
+        </h2>
         <p className={styles.description}>{idea.description}</p>
       </div>
       <div className={styles.tags}>
@@ -189,7 +193,7 @@ export function IdeaCard({
           </span>
         ))}
       </div>
-      {!idea.isExample && !idea.isFlagged && (
+      {!idea.isFlagged && (
         <TeardownPanel
           ideaId={idea.id}
           teardown={idea.teardown}
@@ -197,7 +201,6 @@ export function IdeaCard({
           defaultOpen={teardownOpen}
         />
       )}
-      {!idea.isExample && (
         <div className={`${styles.actions}`}>
           <span>
             <button
@@ -250,7 +253,6 @@ export function IdeaCard({
       🔗 Share
     </button> */}
         </div>
-      )}
     </div>
   );
 }

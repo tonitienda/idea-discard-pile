@@ -86,6 +86,15 @@
     font-size: 1.2em;
     font-weight: bold;
   }
+
+  .titleLink,
+  .titleLink:hover {
+    color: inherit;
+  }
+
+  .titleLink:hover {
+    text-decoration: underline;
+  }
   
   .description {
     margin: 0;

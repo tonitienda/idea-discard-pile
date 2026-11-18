@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS ideas_slug_key;
+ALTER TABLE ideas DROP COLUMN IF EXISTS slug;

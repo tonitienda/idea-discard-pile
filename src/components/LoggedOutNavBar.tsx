@@ -1,4 +1,4 @@
-export default function NavBar() {
+export default function LoggedOutNavBar() {
   return (
     <nav className="navbar navbar-expand-lg bg-light" data-bs-theme="light">
       <div className="container-fluid">
@@ -9,12 +9,15 @@ export default function NavBar() {
       <ul className="navbar-nav">
         <li className="nav-item">
           <a className="nav-link active" href="/api/auth/login">
-            login
+            Log in
           </a>
         </li>
         <li className="nav-item">
-          <a className="nav-link active" href="/api/auth/login">
-            sign_up
+          <a
+            className="nav-link active"
+            href="/api/auth/login?screen_hint=signup"
+          >
+            Sign up
           </a>
         </li>
       </ul>

@@ -17,6 +17,7 @@ const schema = process.env.POSTGRES_SCHEMA || "public";
 const rowToIdea = (row: any): Idea => {
   return {
     id: row.id,
+    slug: row.slug,
     title: row.title,
     description: row.description,
     discardedReason: row.discarded_reason ?? undefined,
@@ -45,7 +46,6 @@ const rowToIdea = (row: any): Idea => {
       [INTERACTION_SUPPORT]: false,
       ...row.my_reactions,
     },
-    isExample: false,
   };
 };
 
@@ -91,7 +91,12 @@ async function withTransaction<T>(
   }
 }
 
-export async function getIdeas(userId?: string): Promise<Idea[]> {
+// Public ideas (not deleted or flagged), newest first, with reaction counts
+// and the viewer's own reactions. Pass slug to fetch a single idea.
+export async function getIdeas(
+  userId?: string,
+  slug?: string
+): Promise<Idea[]> {
   const result = await query(
     `WITH my_reactions AS (
     SELECT
@@ -138,12 +143,36 @@ export async function getIdeas(userId?: string): Promise<Idea[]> {
     LEFT JOIN ${schema}.idea_teardowns t ON i.id = t.idea_id
     WHERE i.deleted_at IS NULL
     AND i.flagged = false
+    AND ($2::text IS NULL OR i.slug = $2)
     GROUP BY i.id, u.handle, u.picture, t.content
     ORDER BY i.created_at DESC`,
-    [userId || null]
+    [userId || null, slug || null]
   );
 
   return result.rows.map(rowToIdea);
+}
+
+export async function getIdeaBySlug(
+  slug: string,
+  userId?: string
+): Promise<Idea | null> {
+  const [idea] = await getIdeas(userId, slug);
+  return idea ?? null;
+}
+
+// For the sitemap.
+export async function getPublicIdeaSlugs(): Promise<
+  { slug: string; updatedAt: string }[]
+> {
+  const result = await query(
+    `SELECT slug, updated_at FROM ${schema}.ideas
+     WHERE deleted_at IS NULL AND flagged = false
+     ORDER BY created_at DESC`
+  );
+  return result.rows.map((row) => ({
+    slug: row.slug,
+    updatedAt: row.updated_at,
+  }));
 }
 
 export async function getIdeasByUserId(userId: string): Promise<Idea[]> {
@@ -187,7 +216,7 @@ export async function createIdea(
 
   await withTransaction(async (client) => {
     await client.query(
-      `INSERT INTO ${schema}.ideas (id, title, description, discarded_reason, tags, owner_id, flagged, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      `INSERT INTO ${schema}.ideas (id, title, description, discarded_reason, tags, owner_id, flagged, created_at, updated_at, slug) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         idea.id,
         idea.title,
@@ -198,6 +227,7 @@ export async function createIdea(
         idea.isFlagged,
         now,
         now,
+        idea.slug,
       ]
     );
 

@@ -1,0 +1,82 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cache } from "react";
+
+import IdeaFeed from "../../../components/IdeaFeed";
+import { getIdeaBySlug } from "../../../backend/db";
+import { useUser } from "../../hooks/use-user";
+import { SITE_NAME } from "../../site";
+import styles from "./idea.module.css";
+
+type Props = { params: { slug: string } };
+
+// Shared by generateMetadata and the page so the idea is fetched once.
+const loadIdea = cache(async (slug: string, userId?: string) =>
+  getIdeaBySlug(slug, userId)
+);
+
+const truncate = (text: string, max: number) =>
+  text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const idea = await loadIdea(params.slug);
+  if (!idea) {
+    return {};
+  }
+
+  const description = truncate(
+    idea.teardown?.summary || idea.description || idea.title,
+    160
+  );
+  const url = `/ideas/${idea.slug}`;
+
+  return {
+    title: idea.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: idea.title,
+      description,
+      siteName: SITE_NAME,
+      publishedTime: idea.createdAt
+        ? new Date(idea.createdAt).toISOString()
+        : undefined,
+    },
+    twitter: { card: "summary", title: idea.title, description },
+  };
+}
+
+export default async function IdeaPage({ params }: Props) {
+  const user = await useUser();
+  const idea = await loadIdea(params.slug, user?.id);
+  if (!idea) {
+    notFound();
+  }
+
+  return (
+    <div className="row">
+      <div className="col-lg-12">
+        <a href="/" className={styles.backLink}>
+          ← All ideas
+        </a>
+        <IdeaFeed
+          ideas={[idea]}
+          enableInteractions={!!user}
+          viewerId={user?.id}
+          openTeardownFor={idea.id}
+        />
+        {!user && (
+          <p className={styles.cta}>
+            Have an idea you never built?{" "}
+            <a href="/api/auth/login?screen_hint=signup">
+              Share it and get an honest teardown
+            </a>
+            .
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
