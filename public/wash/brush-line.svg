@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 24" preserveAspectRatio="none">
+  <!-- One dry-brush stroke: heavy where the brush lands, thinning out, with
+       the bristles dragging gaps into it. Used as a mask; alpha is the ink. -->
+  <defs>
+    <filter id="b" x="-2%" y="-60%" width="104%" height="220%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.3" numOctaves="2" seed="9" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="7" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.9" numOctaves="1" seed="4" result="bristle"/>
+      <feColorMatrix in="bristle" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.55" result="dry"/>
+      <feComposite in="shape" in2="dry" operator="in"/>
+    </filter>
+  </defs>
+  <path d="M6,13 C120,8 260,9 420,11 C600,13 780,12 994,10 L992,14 C790,16 600,17 420,16 C250,15 110,17 8,16 Z" filter="url(#b)"/>
+</svg>

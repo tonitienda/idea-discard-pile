@@ -71,12 +71,14 @@ export default function CommentsSection({
   return (
     <section id="comments" className={styles.section}>
       <h2 className={styles.heading}>
-        Comments{comments.length > 0 ? ` (${comments.length})` : ""}
+        Discussion
+        {comments.length > 0 && <span> {comments.length}</span>}
       </h2>
 
       {comments.length === 0 ? (
         <p className={styles.empty}>
-          No comments yet. Know a way to make it work, or why it can't?
+          Nobody has weighed in yet. Know a way to make it work, or why it
+          can&apos;t?
         </p>
       ) : (
         <ul className={styles.list}>
@@ -86,7 +88,9 @@ export default function CommentsSection({
               <div className={styles.commentMain}>
                 <div className={styles.commentMeta}>
                   <span className={styles.author}>{c.author.handle}</span>
-                  {c.author.id === ideaOwnerId && <span>· author</span>}
+                  {c.author.id === ideaOwnerId && (
+                    <span className={styles.ownerTag}>Idea owner</span>
+                  )}
                   <DateComponent date={c.createdAt} />
                   {canDelete(c) && (
                     <button
@@ -109,7 +113,7 @@ export default function CommentsSection({
         <form className={styles.form} onSubmit={submit}>
           <textarea
             className="form-control"
-            placeholder="Add a comment"
+            placeholder="Add to the discussion"
             aria-label="Add a comment"
             value={body}
             maxLength={COMMENT_MAX_LENGTH}
@@ -121,7 +125,7 @@ export default function CommentsSection({
             </span>
             <button
               type="submit"
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary"
               disabled={submitting || !body.trim()}
             >
               {submitting ? "Posting…" : "Post comment"}
@@ -130,8 +134,10 @@ export default function CommentsSection({
           {error && <p className={styles.error}>{error}</p>}
         </form>
       ) : (
-        <p className={styles.empty}>
-          <a href={loginUrl}>Log in</a> to join the conversation.
+        <p className={styles.loginPrompt}>
+          <a href={loginUrl} className="btn btn-secondary">
+            Log in to comment
+          </a>
         </p>
       )}
     </section>

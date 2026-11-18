@@ -1,0 +1,146 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--bg);
+  background-image: var(--grain);
+  border-bottom: 2px solid var(--ink);
+}
+
+.inner {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--ink);
+}
+
+.mark {
+  color: var(--ink);
+}
+
+/* A spot of light inside the pencil outline. */
+.markLight {
+  fill: var(--gold);
+}
+
+.links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.links > :global(.btn) {
+  margin-left: 6px;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.profile {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.profile img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.narrowOnly {
+  display: none;
+}
+
+.showInDark {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .showInLight {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .showInDark {
+  display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .showInLight {
+    display: none;
+  }
+
+  :global(:root:not([data-theme="light"])) .showInDark {
+    display: inline;
+  }
+}
+
+@media (max-width: 560px) {
+  .wideOnly {
+    display: none;
+  }
+
+  .narrowOnly {
+    display: inline;
+  }
+
+  .link {
+    padding: 0 8px;
+  }
+}

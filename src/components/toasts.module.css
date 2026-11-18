@@ -1,0 +1,54 @@
+.stack {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(560px, calc(100vw - 32px));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 8px 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.success {
+  border-left-color: var(--success);
+}
+
+.warning {
+  border-left-color: var(--warning);
+}
+
+.danger {
+  border-left-color: var(--danger);
+}
+
+.close {
+  flex-shrink: 0;
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: var(--ink-3);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--ink);
+}

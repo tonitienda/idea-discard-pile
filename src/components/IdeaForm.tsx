@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Idea } from "../app/api/model";
 import { trackIdeaCreation } from "../client/ga";
 
-import { BsX } from "react-icons/bs";
 import { useStoreActions } from "../store";
 import {
   DISCARDED_REASON_MAX_LENGTH,
@@ -13,6 +12,7 @@ import {
   IDEA_DESCRIPTION_MIN_LENGTH,
 } from "../app/invariants";
 import { requestTeardown } from "./TeardownPanel";
+import styles from "./ideaform.module.css";
 interface IdeaFormProps {
   onIdeaAdded: (idea: Idea | null) => void;
 }
@@ -153,77 +153,74 @@ export default function IdeaForm(props: IdeaFormProps) {
     }
   };
 
+  const missing = IDEA_DESCRIPTION_MIN_LENGTH - description.trim().length;
+
   return (
-    <>
-      <form onSubmit={handleSubmit} className="d-flex w-100">
-        <div className="flex-grow-1 me-2">
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What's the idea you never built?"
-            rows={onFocus ? 4 : 1}
-            onFocus={() => setOnFocus(true)}
-            className="form-control"
-            disabled={submittingIdea}
-            aria-label="Your idea"
-          />
-          {onFocus && (
-            <>
-              <textarea
-                value={discardedReason}
-                onChange={(e) => setDiscardedReason(e.target.value)}
-                placeholder="Why did you drop it? (optional, sharpens the teardown)"
-                rows={2}
-                maxLength={DISCARDED_REASON_MAX_LENGTH}
-                className="form-control mt-2"
-                disabled={submittingIdea}
-                aria-label="Why you dropped it"
-              />
-              <small className="text-muted">
-                {description.trim().length < IDEA_DESCRIPTION_MIN_LENGTH
-                  ? `${IDEA_DESCRIPTION_MIN_LENGTH - description.trim().length} more characters needed. `
-                  : ""}
-                You'll get an honest teardown: who tried it, why it fails, and
-                the cheapest way to test it.
-              </small>
-            </>
-          )}
-        </div>
-        <button
-          type="submit"
+    <div className={styles.wrapper}>
+      <form
+        onSubmit={handleSubmit}
+        className={`${styles.composer} ${onFocus ? styles.open : ""}`}
+      >
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What's the idea you never built?"
+          rows={onFocus ? 4 : 1}
           onFocus={() => setOnFocus(true)}
-          className="btn btn-primary"
-          disabled={
-            submittingIdea ||
-            description.trim().length < IDEA_DESCRIPTION_MIN_LENGTH ||
-            description.trim().length > IDEA_DESCRIPTION_MAX_LENGTH
-          }
-        >
-          Share Idea
-        </button>
-      </form>
-      {submittingIdea && status && (
-        <small className="text-muted d-block mt-2">{status}</small>
-      )}
-      {submittingIdea && (
-        <div className="progress">
+          className={styles.field}
+          disabled={submittingIdea}
+          aria-label="Your idea"
+        />
+        {onFocus && (
+          <textarea
+            value={discardedReason}
+            onChange={(e) => setDiscardedReason(e.target.value)}
+            placeholder="Why did you drop it? Optional, and it sharpens the teardown."
+            rows={2}
+            maxLength={DISCARDED_REASON_MAX_LENGTH}
+            className={`${styles.field} ${styles.second}`}
+            disabled={submittingIdea}
+            aria-label="Why you dropped it"
+          />
+        )}
+        <div className={styles.footer}>
+          {onFocus && (
+            <p className={styles.hint} aria-live="polite">
+              {submittingIdea && status
+                ? status
+                : missing > 0
+                ? `${missing} more characters to go.`
+                : "You'll get an honest teardown: who tried it, why it fails, and the cheapest way to test it."}
+            </p>
+          )}
+          <button
+            type="submit"
+            onFocus={() => setOnFocus(true)}
+            className="btn btn-primary"
+            disabled={
+              submittingIdea ||
+              description.trim().length < IDEA_DESCRIPTION_MIN_LENGTH ||
+              description.trim().length > IDEA_DESCRIPTION_MAX_LENGTH
+            }
+          >
+            Share idea
+          </button>
+        </div>
+        {submittingIdea && (
           <div
-            className={`progress-bar progress-bar-striped progress-bar-animated
-              ${
-                submissionSuccess === true
-                  ? "bg-success"
-                  : submissionSuccess == null
-                  ? ""
-                  : "bg-danger"
-              }`}
+            className={`${styles.progress} ${
+              submissionSuccess === false ? styles.failed : ""
+            }`}
             role="progressbar"
+            aria-label="Sharing your idea"
             aria-valuenow={submissionPercent}
             aria-valuemin={0}
             aria-valuemax={100}
-            style={{ width: submissionPercent + "%" }}
-          ></div>
-        </div>
-      )}
-    </>
+          >
+            <div style={{ width: submissionPercent + "%" }}></div>
+          </div>
+        )}
+      </form>
+    </div>
   );
 }

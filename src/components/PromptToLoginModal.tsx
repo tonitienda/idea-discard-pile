@@ -1,55 +1,54 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import styles from "./modal.module.css";
 
 type PromptToLoginModalProps = {
   open: boolean;
+  onClose: () => void;
 };
 
-export default function PromptToLoginModal({ open }: PromptToLoginModalProps) {
-  const [isOpen, setOpen] = useState(open);
-
-  // Synchronize the isOpen state with the open prop
+export default function PromptToLoginModal({
+  open,
+  onClose,
+}: PromptToLoginModalProps) {
   useEffect(() => {
-    setOpen(open);
-  }, [open]);
+    if (!open) {
+      return;
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) {
+    return null;
+  }
 
   return (
-    <div className="modal" style={{ display: isOpen ? "block" : "none" }}>
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Join the Community</h5>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              onClick={() => setOpen(false)}
-            >
-              <span aria-hidden="true"></span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <p>
-              Log in to unlock the full experience! After logging in, you can
-              react to ideas, share your own inspirations, and bookmark ideas
-              that resonate with you. Become a part of our creative community
-              and bring your ideas to life!
-            </p>
-          </div>
-          <div className="modal-footer">
-            <a href="/api/auth/login" className="btn btn-primary">
-              Login or Register
-            </a>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              data-bs-dismiss="modal"
-              onClick={() => setOpen(false)}
-            >
-              Close
-            </button>
-          </div>
+    <div className={styles.backdrop} onClick={onClose}>
+      <div
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-prompt-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="login-prompt-title">Log in to join in</h2>
+        <p>
+          With an account you can offer to help, react to ideas, comment, and
+          share the ideas you never built.
+        </p>
+        <div className={styles.buttons}>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            Not now
+          </button>
+          <a href="/api/auth/login" className="btn btn-primary" autoFocus>
+            Log in or sign up
+          </a>
         </div>
       </div>
     </div>

@@ -4,47 +4,58 @@
 
 .bell {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   background: none;
   border: none;
-  font-size: 1.25em;
-  color: #333;
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  font-size: 1.05rem;
   cursor: pointer;
-  padding: 4px 8px;
+}
+
+.bell:hover {
+  background: var(--surface-2);
+  color: var(--ink);
 }
 
 .badge {
   position: absolute;
-  top: 0;
+  top: 2px;
   right: 0;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: #d9534f;
-  color: #fff;
-  font-size: 10px;
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
   line-height: 16px;
   text-align: center;
 }
 
 .panel {
   position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  width: min(360px, calc(100vw - 32px));
-  max-height: 420px;
+  right: -40px;
+  top: calc(100% + 8px);
+  width: min(380px, calc(100vw - 32px));
+  max-height: 440px;
   overflow-y: auto;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
   z-index: 1000;
 }
 
 .empty {
-  padding: 16px;
-  color: #777;
-  margin: 0;
+  padding: 20px;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
 }
 
 .list {
@@ -56,11 +67,12 @@
 .item {
   display: flex;
   gap: 10px;
-  padding: 10px 12px;
-  border-top: 1px solid #eee;
-  color: #333;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
   text-decoration: none;
-  font-size: 0.9em;
+  font-size: 0.9375rem;
+  line-height: 1.4;
 }
 
 .list li:first-child .item {
@@ -68,11 +80,16 @@
 }
 
 .item:hover {
-  background: #f7f7f7;
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.item > div {
+  min-width: 0;
 }
 
 .unread {
-  background: #f3f8ff;
+  background: var(--accent-soft);
 }
 
 .avatar {
@@ -80,22 +97,22 @@
   height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .text {
-  margin: 0;
   overflow-wrap: anywhere;
 }
 
 .excerpt {
-  margin: 2px 0 0;
-  color: #666;
+  margin-top: 2px;
+  color: var(--ink-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .time {
-  font-size: 0.8em;
-  color: #999;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
 }

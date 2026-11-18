@@ -5,12 +5,11 @@ export default async function Profile() {
   const user = await useUser();
 
   return user ? (
-    <div>
-      <ProfileForm user={user} />
-    </div>
+    <ProfileForm user={user} />
   ) : (
-    <a href="/api/auth/login">
-      <span>Login</span>
-    </a>
+    <p>
+      <a href="/api/auth/login?returnTo=%2Fprofile">Log in</a> to edit your
+      profile.
+    </p>
   );
 }

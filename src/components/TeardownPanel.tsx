@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Teardown, Verdict } from "../app/api/model";
+import { BsChevronDown } from "react-icons/bs";
 import styles from "./teardown.module.css";
 
-const VERDICT_LABELS: Record<Verdict, string> = {
+export const VERDICT_LABELS: Record<Verdict, string> = {
   "worth-reviving": "Worth reviving",
   "needs-a-twist": "Needs a twist",
   "let-it-go": "Let it go",
@@ -35,7 +36,7 @@ export const requestTeardown = async (
 
 export function VerdictBadge({ verdict }: { verdict: Verdict }) {
   return (
-    <span className={`${styles.verdict} ${styles[verdict]}`}>
+    <span className={`${styles.verdict} ${styles[verdict]} wash`}>
       {VERDICT_LABELS[verdict]}
     </span>
   );
@@ -64,10 +65,10 @@ export default function TeardownPanel({
       return null;
     }
     return (
-      <div className={styles.panel}>
+      <div className={styles.pending}>
         <button
           type="button"
-          className={styles.toggle}
+          className="btn btn-secondary btn-sm"
           disabled={loading}
           onClick={async () => {
             setLoading(true);
@@ -93,67 +94,85 @@ export default function TeardownPanel({
     <div className={styles.panel}>
       <button
         type="button"
-        className={styles.toggle}
+        className={`${styles.toggle} wash`}
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        <span>{open ? "▾" : "▸"} Teardown</span>
-        <VerdictBadge verdict={teardown.verdict} />
+        <span className={styles.toggleText}>
+          <strong>{open ? "Hide the teardown" : "Teardown"}</strong>
+          {!open && (
+            <span className={styles.toggleSummary}>{teardown.summary}</span>
+          )}
+        </span>
+        <BsChevronDown className={styles.chevron} aria-hidden="true" />
       </button>
 
       {open && (
-        <div className={styles.body}>
+        <div className={`${styles.sheet} wash`}>
           <p className={styles.summary}>{teardown.summary}</p>
 
-          <section>
-            <h4>Who already tried it</h4>
-            {teardown.priorArt.length ? (
-              <ul>
-                {teardown.priorArt.map((p) => (
-                  <li key={p.name}>
-                    <strong>{p.name}</strong>{" "}
-                    <span className={styles.status}>
-                      {STATUS_LABELS[p.status]}
-                    </span>
-                    <br />
-                    {p.description}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Nothing well known. That's either an opening or a warning.</p>
-            )}
-          </section>
+          <dl className={styles.spec}>
+            <div className={styles.row}>
+              <dt>Who already tried it</dt>
+              <dd>
+                {teardown.priorArt.length ? (
+                  <ul className={styles.priorArt}>
+                    {teardown.priorArt.map((p) => (
+                      <li key={p.name}>
+                        <strong>{p.name}</strong>
+                        <span className={styles.status}>
+                          {STATUS_LABELS[p.status]}
+                        </span>
+                        <p>{p.description}</p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>
+                    Nothing well known. That&apos;s either an opening or a
+                    warning.
+                  </p>
+                )}
+              </dd>
+            </div>
 
-          <section>
-            <h4>Why ideas like this usually fail</h4>
-            <ul>
-              {teardown.whyItFails.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          </section>
+            <div className={styles.row}>
+              <dt>Why ideas like this usually fail</dt>
+              <dd>
+                <ul>
+                  {teardown.whyItFails.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
 
-          <section>
-            <h4>What would have to be true</h4>
-            <ul>
-              {teardown.mustBeTrue.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          </section>
+            <div className={styles.row}>
+              <dt>What would have to be true</dt>
+              <dd>
+                <ul>
+                  {teardown.mustBeTrue.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
 
-          <section>
-            <h4>Cheapest first test</h4>
-            <p>{teardown.firstExperiment}</p>
-          </section>
+            <div className={styles.row}>
+              <dt>Cheapest first test</dt>
+              <dd>
+                <p>{teardown.firstExperiment}</p>
+              </dd>
+            </div>
 
-          <section>
-            <h4>
-              Verdict: <VerdictBadge verdict={teardown.verdict} />
-            </h4>
-            <p>{teardown.verdictReason}</p>
-          </section>
+            <div className={styles.row}>
+              <dt>Verdict</dt>
+              <dd>
+                <VerdictBadge verdict={teardown.verdict} />
+                <p className={styles.verdictReason}>{teardown.verdictReason}</p>
+              </dd>
+            </div>
+          </dl>
 
           <p className={styles.disclaimer}>
             Written by AI. Prior art may be incomplete or out of date, so check

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { useUser } from "../hooks/use-user";
 import { isAdmin } from "../../backend/users";
 import { getAdminDashboardInfo } from "../../backend/db";
+import styles from "./admin.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -20,20 +21,16 @@ export default async function AdminDashboard() {
   ] as const;
 
   return (
-    <div>
+    <>
       <h1>Admin</h1>
-      <div className="row">
+      <dl className={styles.tiles}>
         {tiles.map(([label, value]) => (
-          <div className="col-6 col-lg-3 mb-4" key={label}>
-            <div className="card">
-              <div className="card-body">
-                <h6 className="card-subtitle text-muted">{label}</h6>
-                <h2 className="card-title mt-2">{value}</h2>
-              </div>
-            </div>
+          <div className={styles.tile} key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
           </div>
         ))}
-      </div>
-    </div>
+      </dl>
+    </>
   );
 }

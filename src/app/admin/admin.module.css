@@ -1,0 +1,27 @@
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 24px 0 0;
+}
+
+.tile {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.tile dt {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+.tile dd {
+  margin: 4px 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
