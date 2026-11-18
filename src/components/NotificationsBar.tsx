@@ -8,6 +8,7 @@ import {
   useStoreState,
 } from "../store";
 import { BsX } from "react-icons/bs";
+import styles from "./toasts.module.css";
 
 const Notification = (props: {
   level: MessageNotification["level"];
@@ -15,20 +16,18 @@ const Notification = (props: {
   onClose: () => void;
 }) => (
   <div
-    className={`alert alert-dismissible alert-${props.level}`}
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      paddingRight: 6,
-      borderRadius: 6,
-    }}
+    className={`${styles.toast} ${styles[props.level]}`}
+    role={props.level === "danger" ? "alert" : "status"}
   >
     <span dangerouslySetInnerHTML={{ __html: props.message }}></span>
-
-    <BsX
-      style={{ width: 25, height: 25, cursor: "pointer" }}
+    <button
+      type="button"
+      className={styles.close}
       onClick={props.onClose}
-    />
+      aria-label="Dismiss"
+    >
+      <BsX />
+    </button>
   </div>
 );
 
@@ -38,8 +37,12 @@ function NotificationsBar() {
     (actions) => actions.deleteNotification
   );
 
+  if (!notifications.length) {
+    return null;
+  }
+
   return (
-    <>
+    <div className={styles.stack}>
       {notifications.map((notification, idx) => (
         <Notification
           key={idx}
@@ -49,7 +52,7 @@ function NotificationsBar() {
           }}
         />
       ))}
-    </>
+    </div>
   );
 }
 

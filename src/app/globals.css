@@ -1,0 +1,405 @@
+/*
+ * Design tokens and base styles: ink and wash.
+ *
+ * Light mode is ink on paper with watercolour washes (the zen game's palette).
+ * Dark mode is the rockets film: a near-black ground where a wash only ever
+ * lifts the frame. Text is always typeset ink; washes carry meaning, never
+ * decoration:
+ *   - the teal wash is the teardown (and the hero that promises it),
+ *   - green / gold / grey washes are the three verdicts,
+ *   - gold is the light: helping someone.
+ * Pencil (dashed) outlines still mean "not built yet".
+ */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f6efdf;
+  --grain: url("/wash/grain-on-paper.svg");
+  --landscape: url("/wash/landscape-day.svg");
+  --horizon: url("/wash/horizon-day.svg");
+  /* The sheet darkens toward its edges, like paper under a lamp. */
+  --vignette: radial-gradient(
+    ellipse 75% 70% at 50% 40%,
+    transparent 55%,
+    rgba(122, 92, 40, 0.12) 100%
+  );
+  --surface: #fbf7ec;
+  --surface-2: #ece4d1;
+  --ink: #11181d;
+  --ink-2: #3f4a50;
+  --ink-3: #686f72;
+  --line: #ddd3bf;
+  --line-strong: #a99f8b;
+
+  /* Links and focus: the zen game's deep teal. */
+  --accent: #0e4e6c;
+  --accent-hover: #04304a;
+  --accent-ink: #ffffff;
+  --accent-soft: #d9e7e6;
+
+  /* Buttons are solid ink. */
+  --button-bg: #11181d;
+  --button-hover: #2c363c;
+  --button-ink: #f6efdf;
+
+  --gold: #f0b92a;
+  --gold-ink: #11181d;
+
+  --wash-hero: #5fa6bd;
+  --wash-sheet: #9cc9d4;
+  --sheet-ink: #11181d;
+  --sheet-muted: #2a4f5e;
+  --sheet-line: rgba(14, 78, 108, 0.22);
+
+  --revive-bg: #8fc0a8;
+  --revive-ink: #0a3229;
+  --twist-bg: #f0c24a;
+  --twist-ink: #382800;
+  --letgo-bg: #c4c6c0;
+  --letgo-ink: #30363a;
+
+  --danger: #a12d22;
+  --danger-soft: #f4dccf;
+  --success: #17683c;
+  --warning: #7a5200;
+
+  --shadow: 0 12px 32px rgba(17, 24, 29, 0.16);
+
+  --page-width: 720px;
+  --gutter: 20px;
+  --radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #17191d;
+    --grain: url("/wash/grain-on-night.svg");
+    --landscape: url("/wash/landscape-night.svg");
+    --horizon: url("/wash/horizon-night.svg");
+    --vignette: radial-gradient(
+      ellipse 75% 70% at 50% 40%,
+      transparent 45%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+    --surface: #1e2126;
+    --surface-2: #272b32;
+    --ink: #ede6d6;
+    --ink-2: #b8b2a5;
+    --ink-3: #8f8a80;
+    --line: #2d3139;
+    --line-strong: #50555f;
+
+    --accent: #85cfe0;
+    --accent-hover: #b0e2ee;
+    --accent-ink: #17191d;
+    --accent-soft: #1c3540;
+
+    --button-bg: #ede6d6;
+    --button-hover: #ffffff;
+    --button-ink: #17191d;
+
+    --gold: #f5c542;
+    --gold-ink: #17191d;
+
+    --wash-hero: #2e4363;
+    --wash-sheet: #24344f;
+    --sheet-ink: #ede6d6;
+    --sheet-muted: #a9b7cb;
+    --sheet-line: rgba(237, 230, 214, 0.14);
+
+    --revive-bg: #2b5a47;
+    --revive-ink: #cdeedd;
+    --twist-bg: #7d611b;
+    --twist-ink: #fff0c4;
+    --letgo-bg: #3c4047;
+    --letgo-ink: #dcd6c9;
+
+    --danger: #ff9d8a;
+    --danger-soft: #3d1d18;
+    --success: #8fdcae;
+    --warning: #f5d27a;
+
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #17191d;
+  --grain: url("/wash/grain-on-night.svg");
+  --landscape: url("/wash/landscape-night.svg");
+  --horizon: url("/wash/horizon-night.svg");
+  --vignette: radial-gradient(
+    ellipse 75% 70% at 50% 40%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  --surface: #1e2126;
+  --surface-2: #272b32;
+  --ink: #ede6d6;
+  --ink-2: #b8b2a5;
+  --ink-3: #8f8a80;
+  --line: #2d3139;
+  --line-strong: #50555f;
+
+  --accent: #85cfe0;
+  --accent-hover: #b0e2ee;
+  --accent-ink: #17191d;
+  --accent-soft: #1c3540;
+
+  --button-bg: #ede6d6;
+  --button-hover: #ffffff;
+  --button-ink: #17191d;
+
+  --gold: #f5c542;
+  --gold-ink: #17191d;
+
+  --wash-hero: #2e4363;
+  --wash-sheet: #24344f;
+  --sheet-ink: #ede6d6;
+  --sheet-muted: #a9b7cb;
+  --sheet-line: rgba(237, 230, 214, 0.14);
+
+  --revive-bg: #2b5a47;
+  --revive-ink: #cdeedd;
+  --twist-bg: #7d611b;
+  --twist-ink: #fff0c4;
+  --letgo-bg: #3c4047;
+  --letgo-ink: #dcd6c9;
+
+  --danger: #ff9d8a;
+  --danger-soft: #3d1d18;
+  --success: #8fdcae;
+  --warning: #f5d27a;
+
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 72px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: clip;
+  background-color: var(--bg);
+  background-image: var(--grain);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--vignette);
+  pointer-events: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+h1 {
+  font-size: clamp(2.5rem, 1.6rem + 4vw, 4rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 32px var(--gutter) 40px;
+}
+
+/*
+ * A watercolour wash behind an element. Set --wash-color, and optionally
+ * --wash-mask (wash-wide, wash-tall or wash-chip). The mask's alpha is the
+ * pigment: a mottled body with a denser dried edge.
+ */
+.wash {
+  position: relative;
+  isolation: isolate;
+}
+
+.wash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wash-color, var(--wash-sheet));
+  -webkit-mask: var(--wash-mask, url("/wash/wash-wide.svg")) 0 0 / 100% 100%
+    no-repeat;
+  mask: var(--wash-mask, url("/wash/wash-wide.svg")) 0 0 / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/*
+ * A painted view across the whole window: the hero's landscape, or the
+ * footer's horizon. Set --view to one of the two tokens.
+ */
+.view {
+  margin-inline: calc(50% - 50vw);
+  background: var(--view, var(--landscape)) center bottom / cover no-repeat;
+  pointer-events: none;
+}
+
+/* Buttons: solid ink, or an ink outline. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 650;
+  font-size: 0.9375rem;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--button-bg);
+  border-color: var(--button-bg);
+  color: var(--button-ink);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--button-hover);
+  border-color: var(--button-hover);
+  color: var(--button-ink);
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.btn-sm {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 0.875rem;
+}
+
+/* Form fields */
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.form-control::placeholder {
+  color: var(--ink-3);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.form-control[readonly] {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink-2);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

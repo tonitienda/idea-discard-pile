@@ -1,12 +1,24 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import NavBar from "../components/NavBar";
-import { getSession } from "@auth0/nextjs-auth0";
-import LoggedOutNavBar from "../components/LoggedOutNavBar";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import NotificationsBar from "../components/NotificationsBar";
+import { useUser } from "./hooks/use-user";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site";
+import "./globals.css";
+
+const body = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
+
+const display = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -18,32 +30,39 @@ export const metadata: Metadata = {
   openGraph: { siteName: SITE_NAME, type: "website" },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6efdf" },
+    { media: "(prefers-color-scheme: dark)", color: "#17191d" },
+  ],
+};
+
+// Applies a saved theme before first paint. Without a saved choice the CSS
+// follows the system setting.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-  const user = session ? session.user : null;
+  const user = await useUser();
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${body.variable} ${display.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css"
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <UserProvider>
         <body>
-          {user ? <NavBar /> : <LoggedOutNavBar />}
+          <NavBar user={user} />
           <NotificationsBar />
-          <div
-            className="container"
-            style={{ paddingTop: 24, paddingBottom: 48 }}
-          >
-            {children}
-          </div>
+          <main className="page">{children}</main>
+          <Footer />
           <Analytics />
 
           {

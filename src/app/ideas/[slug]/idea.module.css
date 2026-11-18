@@ -1,12 +1,22 @@
 .backLink {
-  display: inline-block;
-  margin-bottom: 4px;
-  font-size: 0.9em;
-  color: #555;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--ink);
 }
 
 .cta {
-  margin-top: 8px;
+  margin-top: 40px;
+  padding: 20px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink-2);
   text-align: center;
-  color: #555;
 }

@@ -1,110 +1,185 @@
+/* The wash bleeds a little past the text column, like paint past a margin. */
 .panel {
-  border-top: 1px solid #eee;
-  margin-top: 12px;
-  padding-top: 10px;
+  --bleed: 32px;
+  margin: 16px calc(-1 * var(--bleed)) 0;
 }
 
+/* No teardown yet: just the button, on the text column. */
+.pending {
+  margin-top: 16px;
+}
+
+/* The teardown is painted: a teal wash whether it is folded or open. */
 .toggle {
+  --wash-color: var(--wash-sheet);
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px var(--bleed);
   background: none;
   border: none;
-  padding: 4px 0;
-  font-size: 0.85em;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #333;
+  color: var(--sheet-ink);
+  text-align: left;
+  font-size: 0.9375rem;
   cursor: pointer;
 }
 
-.toggle:disabled {
-  cursor: progress;
-  color: #888;
+.toggleText {
+  flex: 1;
+  min-width: 0;
 }
 
-.body {
+.toggle strong {
+  display: block;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.toggleSummary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--sheet-muted);
+}
+
+.toggle:hover .toggleSummary {
+  color: var(--sheet-ink);
+}
+
+.chevron {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.toggle[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.sheet {
+  --wash-color: var(--wash-sheet);
+  --wash-mask: url("/wash/wash-tall.svg");
   margin-top: 8px;
-  font-size: 0.95em;
-  line-height: 1.5;
-}
-
-.body section {
-  margin-top: 14px;
-}
-
-.body h4 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8em;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin: 0 0 6px;
-  color: #555;
-}
-
-.body ul {
-  margin: 0;
-  padding-left: 1.2em;
-}
-
-.body li {
-  margin-bottom: 6px;
-}
-
-.body p {
-  margin: 0;
+  padding: 40px calc(var(--bleed) + 8px) 40px;
+  color: var(--sheet-ink);
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
 .summary {
-  font-style: italic;
-  color: #555;
+  max-width: 54ch;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.spec {
+  margin: 20px 0 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 4px 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--sheet-line);
+}
+
+.row dt {
+  color: var(--sheet-muted);
+  font-weight: 650;
+}
+
+.row dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.row ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.row li + li {
+  margin-top: 6px;
+}
+
+.row .priorArt {
+  padding: 0;
+  list-style: none;
+}
+
+.priorArt li + li {
+  margin-top: 12px;
 }
 
 .status {
-  font-size: 0.75em;
-  color: #777;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1px 7px;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--sheet-line);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--sheet-muted);
+  white-space: nowrap;
+}
+
+.verdictReason {
+  margin-top: 8px;
 }
 
 .verdict {
+  --wash-mask: url("/wash/wash-chip.svg");
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-radius: 12px;
-  padding: 2px 10px;
+  padding: 4px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .worth-reviving {
-  background: #e3f5e8;
-  color: #17672f;
+  --wash-color: var(--revive-bg);
+  color: var(--revive-ink);
 }
 
 .needs-a-twist {
-  background: #fff3d6;
-  color: #7a5200;
+  --wash-color: var(--twist-bg);
+  color: var(--twist-ink);
 }
 
 .let-it-go {
-  background: #eceef1;
-  color: #4a5160;
+  --wash-color: var(--letgo-bg);
+  color: var(--letgo-ink);
 }
 
 .disclaimer {
-  margin-top: 14px !important;
-  font-size: 0.8em;
-  color: #888;
+  padding-top: 14px;
+  border-top: 1px solid var(--sheet-line);
+  font-size: 0.8125rem;
+  color: var(--sheet-muted);
 }
 
 .error {
-  color: #b00020;
-  font-size: 0.85em;
-  margin: 4px 0 0;
+  margin-top: 6px;
+  font-size: 0.875rem;
+  color: var(--danger);
+}
+
+@media (max-width: 560px) {
+  .panel {
+    --bleed: 18px;
+  }
+
+  .sheet {
+    padding: 30px calc(var(--bleed) + 4px);
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
 }

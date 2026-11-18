@@ -1,4 +1,3 @@
-// src/app/feed/FeedClientWrapper.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,6 +11,7 @@ type FeedClientWrapperProps = {
   initialFeed: Idea[];
   enableInteractions: boolean;
   user: User;
+  emptyMessage?: string;
 };
 
 export default function FeedClientWrapper(props: FeedClientWrapperProps) {
@@ -31,19 +31,17 @@ export default function FeedClientWrapper(props: FeedClientWrapperProps) {
     <>
       {enableInteractions && (
         <StoreProvider store={store}>
-          <div className="col-lg-12">
-            <IdeaForm onIdeaAdded={addIdea} />
-          </div>
+          <IdeaForm onIdeaAdded={addIdea} />
         </StoreProvider>
       )}
-      <div className="col-lg-12">
-        <IdeaFeed
-          ideas={ideas}
-          enableInteractions={enableInteractions}
-          viewerId={props.user?.id}
-          openTeardownFor={lastAddedId}
-        />
-      </div>
+      <IdeaFeed
+        ideas={ideas}
+        enableInteractions={enableInteractions}
+        viewerId={props.user?.id}
+        openTeardownFor={lastAddedId}
+        filterable
+        emptyMessage={props.emptyMessage}
+      />
     </>
   );
 }

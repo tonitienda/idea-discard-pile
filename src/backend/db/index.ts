@@ -1,5 +1,6 @@
 // DB Client
 import { Pool, PoolClient } from "pg";
+import { v4 as uuid } from "uuid";
 import {
   Idea,
   User,
@@ -10,6 +11,8 @@ import {
   INTERACTION_NOT_USEFUL,
   INTERACTION_SUPPORT,
   Teardown,
+  Comment,
+  Notification,
 } from "../../app/api/model";
 
 const schema = process.env.POSTGRES_SCHEMA || "public";
@@ -22,6 +25,8 @@ const rowToIdea = (row: any): Idea => {
     description: row.description,
     discardedReason: row.discarded_reason ?? undefined,
     teardown: row.teardown ?? undefined,
+    commentCount:
+      row.comment_count === undefined ? undefined : Number(row.comment_count),
     owner: {
       id: row.owner_id,
       handle: `@${row.handle}`,
@@ -122,6 +127,8 @@ export async function getIdeas(
           u.handle,
           u.picture,
           t.content AS teardown,
+          (SELECT COUNT(*) FROM ${schema}.idea_comments c
+            WHERE c.idea_id = i.id AND c.deleted_at IS NULL) AS comment_count,
           COALESCE(
         jsonb_object_agg(
             rc.reaction,
@@ -372,4 +379,171 @@ export async function countIdeasByUserIdSince(
     [userId, since.toISOString()]
   );
   return Number(result.rows[0].count);
+}
+
+// ---- Comments ----
+
+const rowToComment = (row: any): Comment => ({
+  id: row.id,
+  ideaId: row.idea_id,
+  body: row.body,
+  createdAt: row.created_at,
+  author: {
+    id: row.user_id,
+    handle: `@${row.handle}`,
+    picture: row.picture,
+  },
+});
+
+export async function getComments(ideaId: string): Promise<Comment[]> {
+  const result = await query(
+    `SELECT c.*, u.handle, u.picture
+     FROM ${schema}.idea_comments c
+     INNER JOIN ${schema}.users u ON u.id = c.user_id
+     WHERE c.idea_id = $1 AND c.deleted_at IS NULL
+     ORDER BY c.created_at ASC`,
+    [ideaId]
+  );
+  return result.rows.map(rowToComment);
+}
+
+export async function getCommentById(
+  id: string
+): Promise<(Comment & { deletedAt?: string }) | null> {
+  const result = await query(
+    `SELECT c.*, u.handle, u.picture
+     FROM ${schema}.idea_comments c
+     INNER JOIN ${schema}.users u ON u.id = c.user_id
+     WHERE c.id = $1`,
+    [id]
+  );
+  const row = result.rows[0];
+  return row ? { ...rowToComment(row), deletedAt: row.deleted_at ?? undefined } : null;
+}
+
+// Saves the comment and, unless owners comment on their own idea, notifies
+// the idea owner.
+export async function createComment(
+  comment: { id: string; ideaId: string; userId: string; body: string },
+  ideaOwnerId: string
+): Promise<void> {
+  await withTransaction(async (client) => {
+    await client.query(
+      `INSERT INTO ${schema}.idea_comments (id, idea_id, user_id, body) VALUES ($1, $2, $3, $4)`,
+      [comment.id, comment.ideaId, comment.userId, comment.body]
+    );
+    if (ideaOwnerId !== comment.userId) {
+      await client.query(
+        `INSERT INTO ${schema}.notifications (id, user_id, actor_id, idea_id, type, comment_id)
+         VALUES ($1, $2, $3, $4, 'comment', $5)`,
+        [uuid(), ideaOwnerId, comment.userId, comment.ideaId, comment.id]
+      );
+    }
+  });
+}
+
+export async function softDeleteComment(id: string): Promise<void> {
+  await query(
+    `UPDATE ${schema}.idea_comments SET deleted_at = $1 WHERE id = $2`,
+    [new Date().toISOString(), id]
+  );
+}
+
+export async function countCommentsByUserIdSince(
+  userId: string,
+  since: Date
+): Promise<number> {
+  const result = await query(
+    `SELECT COUNT(*) FROM ${schema}.idea_comments WHERE user_id = $1 AND created_at > $2`,
+    [userId, since.toISOString()]
+  );
+  return Number(result.rows[0].count);
+}
+
+// People who reacted "I can help" to an idea, earliest first.
+export async function getHelpers(ideaId: string) {
+  const result = await query(
+    `SELECT u.id, u.handle, u.picture
+     FROM ${schema}.idea_reactions r
+     INNER JOIN ${schema}.users u ON u.id = r.user_id
+     WHERE r.idea_id = $1 AND r.reaction = 'icanhelp'
+     ORDER BY r.created_at ASC`,
+    [ideaId]
+  );
+  return result.rows.map((row) => ({
+    id: row.id,
+    handle: `@${row.handle}`,
+    picture: row.picture,
+  }));
+}
+
+// ---- Notifications ----
+
+// Once per helper and idea, however often the reaction is toggled.
+export async function notifyHelpOffered(
+  ideaOwnerId: string,
+  helperId: string,
+  ideaId: string
+): Promise<void> {
+  if (ideaOwnerId === helperId) {
+    return;
+  }
+  await query(
+    `INSERT INTO ${schema}.notifications (id, user_id, actor_id, idea_id, type)
+     VALUES ($1, $2, $3, $4, 'icanhelp')
+     ON CONFLICT (user_id, actor_id, idea_id) WHERE type = 'icanhelp' DO NOTHING`,
+    [uuid(), ideaOwnerId, helperId, ideaId]
+  );
+}
+
+export async function getNotifications(
+  userId: string,
+  limit = 30
+): Promise<{ items: Notification[]; unreadCount: number }> {
+  const [items, unread] = await Promise.all([
+    query(
+      `SELECT n.id, n.type, n.created_at, n.read_at,
+         a.id AS actor_id, a.handle, a.picture,
+         i.id AS idea_id, i.slug, i.title,
+         CASE WHEN c.deleted_at IS NULL THEN left(c.body, 140) END AS excerpt
+       FROM ${schema}.notifications n
+       INNER JOIN ${schema}.users a ON a.id = n.actor_id
+       INNER JOIN ${schema}.ideas i ON i.id = n.idea_id
+       LEFT JOIN ${schema}.idea_comments c ON c.id = n.comment_id
+       WHERE n.user_id = $1 AND i.deleted_at IS NULL
+       ORDER BY n.created_at DESC
+       LIMIT $2`,
+      [userId, limit]
+    ),
+    query(
+      `SELECT COUNT(*) FROM ${schema}.notifications n
+       INNER JOIN ${schema}.ideas i ON i.id = n.idea_id
+       WHERE n.user_id = $1 AND n.read_at IS NULL AND i.deleted_at IS NULL`,
+      [userId]
+    ),
+  ]);
+
+  return {
+    items: items.rows.map((row) => ({
+      id: row.id,
+      type: row.type,
+      createdAt: row.created_at,
+      read: !!row.read_at,
+      actor: {
+        id: row.actor_id,
+        handle: `@${row.handle}`,
+        picture: row.picture,
+      },
+      idea: { id: row.idea_id, slug: row.slug, title: row.title },
+      excerpt: row.excerpt ?? undefined,
+    })),
+    unreadCount: Number(unread.rows[0].count),
+  };
+}
+
+export async function markNotificationsRead(userId: string): Promise<void> {
+  await query(
+    `UPDATE ${schema}.notifications SET read_at = $1 WHERE user_id = $2 AND read_at IS NULL`,
+    [new Date().toISOString(), userId]
+  );
 }

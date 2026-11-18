@@ -1,0 +1,162 @@
+.section {
+  margin-top: 16px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.helpersSection {
+  padding-bottom: 12px;
+}
+
+.heading {
+  font-size: 1.5rem;
+}
+
+.heading span {
+  color: var(--ink-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.empty {
+  margin-top: 8px;
+  color: var(--ink-2);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.comment {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.comment:first-child {
+  border-top: none;
+}
+
+.avatar {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.commentMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.commentMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.author {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: lowercase;
+}
+
+.ownerTag {
+  padding: 0 8px;
+  background: var(--accent-soft);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.body {
+  margin-top: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.deleteButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.deleteButton:hover {
+  color: var(--danger);
+  text-decoration: underline;
+}
+
+.form {
+  margin-top: 16px;
+}
+
+.form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.loginPrompt {
+  margin-top: 16px;
+}
+
+.error {
+  color: var(--danger);
+  margin-top: 8px;
+}
+
+.helpers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.helper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 12px 3px 3px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+.helper .avatar {
+  width: 24px;
+  height: 24px;
+}
+
+.hint {
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}

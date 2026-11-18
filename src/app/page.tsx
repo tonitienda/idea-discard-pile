@@ -14,17 +14,14 @@ export default async function Home() {
   const ideas = await getIdeas(user?.id);
 
   return (
-    <div className="row">
-      {!user && (
-        <div className="col-lg-12">
-          <Hero />
-        </div>
-      )}
+    <>
+      {!user && <Hero />}
       <FeedClientWrapper
         initialFeed={ideas}
         enableInteractions={!!user}
         user={user}
+        emptyMessage="No ideas here yet. Share the first one."
       />
-    </div>
+    </>
   );
 }

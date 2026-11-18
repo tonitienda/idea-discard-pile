@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { BsArrowLeft } from "react-icons/bs";
 
 import IdeaFeed from "../../../components/IdeaFeed";
-import { getIdeaBySlug } from "../../../backend/db";
+import CommentsSection from "../../../components/CommentsSection";
+import HelpersList from "../../../components/HelpersList";
+import { getComments, getHelpers, getIdeaBySlug } from "../../../backend/db";
 import { useUser } from "../../hooks/use-user";
 import { SITE_NAME } from "../../site";
 import styles from "./idea.module.css";
@@ -55,28 +58,44 @@ export default async function IdeaPage({ params }: Props) {
     notFound();
   }
 
+  const isOwner = user?.id === idea.owner.id;
+  const [comments, helpers] = await Promise.all([
+    getComments(idea.id),
+    isOwner ? getHelpers(idea.id) : Promise.resolve([]),
+  ]);
+  const loginUrl = `/api/auth/login?returnTo=${encodeURIComponent(
+    `/ideas/${idea.slug}#comments`
+  )}`;
+
   return (
-    <div className="row">
-      <div className="col-lg-12">
-        <a href="/" className={styles.backLink}>
-          ← All ideas
-        </a>
-        <IdeaFeed
-          ideas={[idea]}
-          enableInteractions={!!user}
-          viewerId={user?.id}
-          openTeardownFor={idea.id}
-        />
-        {!user && (
-          <p className={styles.cta}>
-            Have an idea you never built?{" "}
-            <a href="/api/auth/login?screen_hint=signup">
-              Share it and get an honest teardown
-            </a>
-            .
-          </p>
-        )}
-      </div>
-    </div>
+    <>
+      <a href="/" className={styles.backLink}>
+        <BsArrowLeft aria-hidden="true" /> All ideas
+      </a>
+      <IdeaFeed
+        ideas={[idea]}
+        variant="page"
+        enableInteractions={!!user}
+        viewerId={user?.id}
+        openTeardownFor={idea.id}
+      />
+      {isOwner && <HelpersList helpers={helpers} />}
+      <CommentsSection
+        ideaId={idea.id}
+        ideaOwnerId={idea.owner.id}
+        initialComments={comments}
+        viewerId={user?.id}
+        loginUrl={loginUrl}
+      />
+      {!user && (
+        <p className={styles.cta}>
+          Have an idea you never built?{" "}
+          <a href="/api/auth/login?screen_hint=signup">
+            Share it and get an honest teardown
+          </a>
+          .
+        </p>
+      )}
+    </>
   );
 }
