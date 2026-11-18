@@ -1,0 +1,35 @@
+// The site's mark: one ink stroke that goes most of the way round a square
+// and stops, the outline of an idea nobody finished. The gold light sits in
+// the corner it left open. src/app/icon.svg draws the same shape.
+export const MARK_STROKE =
+  "M15.50 3.20 L14.07 3.18 L12.63 3.16 L11.14 3.14 L9.94 3.22 L8.70 3.49 L7.51 3.96 L6.41 4.61 L5.43 5.43 L4.58 6.39 L3.90 7.48 L3.39 8.66 L3.07 9.91 L2.96 11.15 L2.95 13.60 L2.94 16 L2.93 18.40 L2.92 20.85 L3.01 22.10 L3.31 23.36 L3.81 24.57 L4.49 25.68 L5.33 26.67 L6.33 27.51 L7.44 28.17 L8.65 28.65 L9.91 28.93 L11.15 29 L13.60 28.98 L16 28.95 L18.40 28.93 L20.84 28.90 L22.06 28.77 L23.28 28.44 L24.43 27.93 L25.49 27.25 L26.41 26.41 L27.20 25.45 L27.81 24.37 L28.25 23.22 L28.50 22.02 L28.56 20.85 L28.53 19.37 L28.49 17.93 L28.45 16.50 L28.38 16.05 L28.17 15.65 L27.85 15.33 L27.45 15.12 L27 15.05 L26.55 15.12 L26.15 15.33 L25.83 15.65 L25.62 16.05 L25.55 16.50 L25.51 17.93 L25.47 19.37 L25.44 20.75 L25.34 21.52 L25.14 22.21 L24.84 22.86 L24.44 23.44 L23.95 23.95 L23.40 24.38 L22.80 24.72 L22.15 24.95 L21.48 25.08 L20.76 25.10 L18.40 25.07 L16 25.05 L13.60 25.02 L11.25 25 L10.55 24.92 L9.92 24.75 L9.33 24.48 L8.78 24.13 L8.30 23.70 L7.88 23.21 L7.54 22.66 L7.29 22.07 L7.14 21.44 L7.08 20.75 L7.07 18.40 L7.06 16 L7.05 13.60 L7.04 11.25 L7.08 10.55 L7.22 9.91 L7.45 9.29 L7.79 8.72 L8.20 8.20 L8.70 7.76 L9.26 7.39 L9.87 7.12 L10.52 6.94 L11.26 6.86 L12.63 6.84 L14.07 6.82 L15.50 6.80 L16.06 6.71 L16.56 6.46 L16.96 6.06 L17.21 5.56 L17.30 5 L17.21 4.44 L16.96 3.94 L16.56 3.54 L16.06 3.29 Z";
+
+export default function SiteMark({
+  className,
+  lightClassName,
+  size = 22,
+}: {
+  className?: string;
+  lightClassName?: string;
+  size?: number;
+}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 32 32"
+      width={size}
+      height={size}
+      aria-hidden="true"
+    >
+      <path d={MARK_STROKE} fill="currentColor" />
+      <rect
+        className={lightClassName}
+        x="17.5"
+        y="3.5"
+        width="11"
+        height="11"
+        rx="1.8"
+      />
+    </svg>
+  );
+}
