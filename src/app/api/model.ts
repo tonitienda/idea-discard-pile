@@ -41,6 +41,27 @@ export type Idea = {
   reactions: { [key: string]: number };
   myReactions: { [key: string]: boolean };
   isExample: boolean;
+  teardown?: Teardown;
+};
+
+export const VERDICTS = ["worth-reviving", "needs-a-twist", "let-it-go"] as const;
+export type Verdict = (typeof VERDICTS)[number];
+
+export type PriorArt = {
+  name: string;
+  description: string;
+  status: "active" | "defunct" | "unknown";
+};
+
+// An honest assessment of an idea, generated once when it is shared.
+export type Teardown = {
+  summary: string;
+  priorArt: PriorArt[];
+  whyItFails: string[];
+  mustBeTrue: string[];
+  firstExperiment: string;
+  verdict: Verdict;
+  verdictReason: string;
 };
 
 export type IdeaModeration = {

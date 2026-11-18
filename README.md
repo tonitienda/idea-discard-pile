@@ -19,7 +19,8 @@ Configuration lives in `.env.local` (not committed):
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_DATABASE` | Database connection |
 | `POSTGRES_SCHEMA` | `dev`, `staging` or `production` |
 | `OPENAI_API_KEY` | Idea analysis |
-| `OPENAI_MODEL` | Optional, defaults to `gpt-4o-mini` |
+| `OPENAI_MODEL` | Optional moderation model, defaults to `gpt-4o-mini` |
+| `OPENAI_TEARDOWN_MODEL` | Optional teardown model, defaults to `gpt-5.4-mini` |
 | `ADMIN_EMAILS` | Comma-separated emails allowed to open `/admin` |
 
 ## Migrations
