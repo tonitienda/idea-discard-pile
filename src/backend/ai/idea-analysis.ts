@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Created on first use so builds don't need OPENAI_API_KEY.
+let client: OpenAI | null = null;
+const getClient = () =>
+  (client ??= new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
 
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
@@ -49,7 +50,7 @@ export const analyzeIdea = async (
   user: string
 ): Promise<IdeaAIAnalysis | null> => {
   try {
-    const response = await client.chat.completions.create({
+    const response = await getClient().chat.completions.create({
       model: MODEL,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
