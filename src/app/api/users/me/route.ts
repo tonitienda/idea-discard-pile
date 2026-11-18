@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "../../../../backend/users";
-import { updateUserProfile } from "../../../../backend/db";
+import { getUser, HANDLE_PATTERN } from "../../../../backend/users";
+import { isHandleTaken, updateUserProfile } from "../../../../backend/db";
 
 export async function GET(req: NextRequest) {
-  console.error("GET2", req.url);
   const user = await getUser(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,63 +11,65 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(user, { status: 200 });
 }
 
-function isValidUrl(url: string) {
+// Only https URLs are accepted. The URL is not fetched server-side: the
+// browser loads it like any other <img>, so the server never requests
+// user-supplied addresses.
+function isValidPictureUrl(value: unknown): value is string {
+  if (typeof value !== "string" || value.length > 255) {
+    return false;
+  }
   try {
-    new URL(url);
-    return true;
-  } catch (e) {
+    return new URL(value).protocol === "https:";
+  } catch {
     return false;
   }
 }
 
-async function checkIfImageUrl(url: string): Promise<boolean> {
-  if (!isValidUrl(url)) {
-    return false;
-  }
-
-  try {
-    const response = await fetch(url, { method: "HEAD" });
-
-    // Check if the response is ok and if the content type is an image
-    if (response.ok) {
-      const contentType = response.headers.get("Content-Type");
-
-      return contentType && contentType.startsWith("image/");
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error("Error fetching the URL:", error);
-    return false;
-  }
-}
-
-function isValidHandle(handle: string) {
-  return /^[a-zA-Z0-9_]{1,15}$/.test(handle);
-}
 export async function PUT(req: NextRequest) {
   const user = await getUser(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const data = await req.json();
-  const { handle, picture, name } = data;
-
-  const isValidImageUrl = await checkIfImageUrl(picture);
-  if (!isValidImageUrl) {
-    return NextResponse.json({ error: "Invalid picture URL" }, { status: 400 });
+  let data: { handle?: unknown; picture?: unknown; name?: unknown };
+  try {
+    data = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (!isValidHandle(handle)) {
-    return NextResponse.json({ error: "Invalid handle" }, { status: 400 });
+  const { handle, picture } = data;
+  const name = typeof data.name === "string" ? data.name.trim() : "";
+
+  if (!isValidPictureUrl(picture)) {
+    return NextResponse.json(
+      { error: "Picture must be an https URL" },
+      { status: 400 }
+    );
   }
 
-  if (!name) {
+  if (typeof handle !== "string" || !HANDLE_PATTERN.test(handle)) {
+    return NextResponse.json(
+      {
+        error:
+          "Handle must be 1-15 characters: letters, numbers or underscores",
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!name || name.length > 255) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  await updateUserProfile(user.id, { handle, picture, name });
+  if (await isHandleTaken(handle, user.id)) {
+    return NextResponse.json(
+      { error: "That handle is already taken" },
+      { status: 409 }
+    );
+  }
 
-  return NextResponse.json(user, { status: 200 });
+  const updated = await updateUserProfile(user.id, { handle, picture, name });
+
+  return NextResponse.json(updated, { status: 200 });
 }

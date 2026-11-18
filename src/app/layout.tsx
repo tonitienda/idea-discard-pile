@@ -10,22 +10,9 @@ import NotificationsBar from "../components/NotificationsBar";
 
 export const metadata: Metadata = {
   title: "Aidia Hub - Where ideas connect",
-  description: "Discarded ideas that could be usefule to you!",
+  description:
+    "Share the ideas you never built, and find ones worth picking up.",
 };
-
-const templates = [
-  "lux",
-  "materia",
-  "minty",
-  "pulse",
-  "sandstone",
-  "solar",
-  "superhero",
-  "united",
-  "yeti",
-  "quartz",
-  "sketchy",
-];
 
 export default async function RootLayout({
   children,
@@ -35,21 +22,13 @@ export default async function RootLayout({
   const session = await getSession();
   const user = session ? session.user : null;
 
-  //const template = templates[Math.floor(Math.random() * templates.length)];
-  const template = "lux";
-
   return (
     <html lang="en">
       <head>
         <link
           rel="stylesheet"
-          href={`https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/${template}/bootstrap.min.css`}
+          href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css"
         />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1105071770248849"
-          crossOrigin="anonymous"
-        ></script>
       </head>
       <UserProvider>
         <body>

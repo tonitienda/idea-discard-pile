@@ -7,6 +7,13 @@ export const INTERACTION_NOT_USEFUL = "notuseful";
 export const INTERACTION_FUNNY = "funny";
 export const INTERACTION_SUPPORT = "icanhelp";
 
+export const REACTIONS: string[] = [
+  INTERACTION_LOVE,
+  INTERACTION_NOT_USEFUL,
+  INTERACTION_FUNNY,
+  INTERACTION_SUPPORT,
+];
+
 export type PublicUser = {
   id: string;
   handle: string;
@@ -53,4 +60,6 @@ export type IdeaModeration = {
 export type AdminDashboard = {
   ideasCount: number;
   usersCount: number;
+  flaggedIdeasCount: number;
+  reactionsCount: number;
 };
