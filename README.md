@@ -22,6 +22,7 @@ Configuration lives in `.env.local` (not committed):
 | `OPENAI_MODEL` | Optional moderation model, defaults to `gpt-4o-mini` |
 | `OPENAI_TEARDOWN_MODEL` | Optional teardown model, defaults to `gpt-5.4-mini` |
 | `ADMIN_EMAILS` | Comma-separated emails allowed to open `/admin` |
+| `NEXT_PUBLIC_SITE_URL` | Optional canonical origin for SEO metadata and the sitemap, defaults to `https://aidiahub.com` |
 
 ## Migrations
 
@@ -31,3 +32,11 @@ just migration-up           # apply migrations to the dev schema
 ```
 
 `npm run build` applies migrations for `$ENV` before building, which is what Vercel runs.
+
+## Teardowns for existing ideas
+
+New ideas get a teardown when they are shared. To fill in the ones that don't have one (by default only IdeaBot's example ideas; `--all` for every idea), against the schema in `POSTGRES_SCHEMA`:
+
+```bash
+npx tsx --env-file=.env.local scripts/generate-teardowns.ts [--all]
+```

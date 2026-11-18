@@ -28,6 +28,7 @@ export type User = PublicUser & {
 
 export type Idea = {
   id: string;
+  slug: string;
   title: string;
   description?: string;
   discardedReason?: string;
@@ -40,7 +41,6 @@ export type Idea = {
   isFlagged?: boolean;
   reactions: { [key: string]: number };
   myReactions: { [key: string]: boolean };
-  isExample: boolean;
   teardown?: Teardown;
 };
 

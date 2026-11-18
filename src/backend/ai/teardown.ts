@@ -14,9 +14,13 @@ Be specific and candid, like a sharp friend who has seen many startups, not a ch
 - whyItFails: 3-5 concrete reasons ideas like this usually fail.
 - mustBeTrue: 3-5 assumptions that would have to hold for it to work.
 - firstExperiment: the cheapest test, doable in a week, that would validate or kill it.
-- verdict: "worth-reviving", "needs-a-twist" or "let-it-go".
-- verdictReason: one or two sentences explaining the verdict. If the author gave a
-  reason for dropping it, say whether that reason holds up.
+- verdict: be decisive; "needs-a-twist" is not a safe middle answer.
+  - "worth-reviving": the core is sound and the main obstacles are execution, not the idea.
+  - "needs-a-twist": the idea as stated fails, but one specific change you can name fixes it.
+  - "let-it-go": the problem is fundamental (physics, economics, a market already won,
+    no one with the problem) and no single change rescues it.
+- verdictReason: one or two sentences explaining the verdict. For "needs-a-twist", name
+  the twist. If the author gave a reason for dropping it, say whether that reason holds up.
 Keep every list item to one or two sentences.`;
 
 const stringList = { type: "array", items: { type: "string" } };
