@@ -1,4 +1,5 @@
 import User from "./User";
+import NotificationsBell from "./NotificationsBell";
 
 export default function NavBar() {
   return (
@@ -21,7 +22,10 @@ export default function NavBar() {
         </div>
         <a href="/ideas">My ideas</a>
 
-        <User />
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <NotificationsBell />
+          <User />
+        </div>
       </div>
     </nav>
   );

@@ -42,6 +42,29 @@ export type Idea = {
   reactions: { [key: string]: number };
   myReactions: { [key: string]: boolean };
   teardown?: Teardown;
+  commentCount?: number;
+};
+
+export type Comment = {
+  id: string;
+  ideaId: string;
+  body: string;
+  createdAt: string;
+  author: PublicUser;
+};
+
+export const NOTIFICATION_TYPES = ["comment", "icanhelp"] as const;
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+
+export type Notification = {
+  id: string;
+  type: NotificationType;
+  createdAt: string;
+  read: boolean;
+  actor: PublicUser;
+  idea: { id: string; slug: string; title: string };
+  // Start of the comment, for "comment" notifications whose comment still exists.
+  excerpt?: string;
 };
 
 export const VERDICTS = ["worth-reviving", "needs-a-twist", "let-it-go"] as const;

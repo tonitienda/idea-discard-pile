@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import IdeaFeed from "../../../components/IdeaFeed";
-import { getIdeaBySlug } from "../../../backend/db";
+import CommentsSection from "../../../components/CommentsSection";
+import HelpersList from "../../../components/HelpersList";
+import { getComments, getHelpers, getIdeaBySlug } from "../../../backend/db";
 import { useUser } from "../../hooks/use-user";
 import { SITE_NAME } from "../../site";
 import styles from "./idea.module.css";
@@ -55,6 +57,15 @@ export default async function IdeaPage({ params }: Props) {
     notFound();
   }
 
+  const isOwner = user?.id === idea.owner.id;
+  const [comments, helpers] = await Promise.all([
+    getComments(idea.id),
+    isOwner ? getHelpers(idea.id) : Promise.resolve([]),
+  ]);
+  const loginUrl = `/api/auth/login?returnTo=${encodeURIComponent(
+    `/ideas/${idea.slug}#comments`
+  )}`;
+
   return (
     <div className="row">
       <div className="col-lg-12">
@@ -66,6 +77,14 @@ export default async function IdeaPage({ params }: Props) {
           enableInteractions={!!user}
           viewerId={user?.id}
           openTeardownFor={idea.id}
+        />
+        {isOwner && <HelpersList helpers={helpers} />}
+        <CommentsSection
+          ideaId={idea.id}
+          ideaOwnerId={idea.owner.id}
+          initialComments={comments}
+          viewerId={user?.id}
+          loginUrl={loginUrl}
         />
         {!user && (
           <p className={styles.cta}>

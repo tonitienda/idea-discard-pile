@@ -12,8 +12,10 @@ import {
   BsPerson,
   BsHeartbreak,
   BsHeartbreakFill,
+  BsChat,
 } from "react-icons/bs";
 import { MdPersonAdd } from "react-icons/md";
+import { store } from "../store";
 
 import DateComponent from "./DateComponent";
 import {
@@ -155,9 +157,20 @@ export function IdeaCard({
     });
     trackIdeaReaction(idea.id, action, "enabled");
 
-    await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
+    const res = await fetch(`/api/ideas/${idea.id}/reactions/${action}`, {
       method: "POST",
     });
+
+    if (
+      res.ok &&
+      action === INTERACTION_SUPPORT &&
+      viewerId !== idea.owner.id
+    ) {
+      store.getActions().addNotification({
+        level: "success",
+        message: `We let ${idea.owner.handle} know. <a href="/ideas/${idea.slug}#comments">Add a comment</a> to say how you can help.`,
+      });
+    }
   };
 
   return (
@@ -246,6 +259,18 @@ export function IdeaCard({
             </button>
             <span style={{ display: "inline" }}>{getNotUsefulCount(idea)}</span>
           </span>
+          {idea.commentCount !== undefined && (
+            <span>
+              <a
+                href={`/ideas/${idea.slug}#comments`}
+                className={`${styles.actionButton} ${styles.commentsLink}`}
+                aria-label="Comments"
+              >
+                <BsChat />
+              </a>
+              <span style={{ display: "inline" }}>{idea.commentCount}</span>
+            </span>
+          )}
           {/* <button
       onClick={() => alert("Share clicked!")}
       className={styles.actionButton}

@@ -4,8 +4,9 @@ import {
   createIdeaReaction,
   deleteIdeaReaction,
   getIdeaById,
+  notifyHelpOffered,
 } from "../../../../../../backend/db";
-import { REACTIONS } from "../../../../model";
+import { INTERACTION_SUPPORT, REACTIONS } from "../../../../model";
 
 const handle =
   (apply: typeof createIdeaReaction) =>
@@ -27,6 +28,10 @@ const handle =
     }
 
     await apply(ideaId, user.id, action);
+
+    if (apply === createIdeaReaction && action === INTERACTION_SUPPORT) {
+      await notifyHelpOffered(idea.owner.id, user.id, ideaId);
+    }
 
     return new NextResponse(null, { status: 204 });
   };

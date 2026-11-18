@@ -14,6 +14,18 @@ import {
 import { toHandle } from "../../../../backend/users";
 import { v4 as uuid } from "uuid";
 
+// handleCallback redirects to the login's returnTo. Only same-origin
+// targets are followed.
+const returnUrl = (res: Response, req: NextRequest) => {
+  const home = new URL("/", req.url);
+  const location = res.headers.get("location");
+  if (!location) {
+    return home;
+  }
+  const target = new URL(location, req.url);
+  return target.origin === home.origin ? target : home;
+};
+
 export const GET = handleAuth({
   callback: async (req: NextRequest, ctx: AppRouteHandlerFnContext) => {
     try {
@@ -57,10 +69,9 @@ export const GET = handleAuth({
           });
         }
 
-        // For existing users, redirect to home page
-        const homeUrl = new URL("/", req.url);
-
-        return NextResponse.redirect(homeUrl, {
+        // Existing users go back where they logged in from (returnTo),
+        // or home.
+        return NextResponse.redirect(returnUrl(res, req), {
           headers: nextRes.headers, // Preserve headers
           status: 302,
         });

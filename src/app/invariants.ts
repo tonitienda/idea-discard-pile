@@ -3,3 +3,6 @@ export const IDEA_DESCRIPTION_MAX_LENGTH = 5000;
 export const DISCARDED_REASON_MAX_LENGTH = 1000;
 
 export const MAX_IDEAS_PER_HOUR_FREE_USER = 2;
+
+export const COMMENT_MAX_LENGTH = 2000;
+export const MAX_COMMENTS_PER_HOUR = 20;
